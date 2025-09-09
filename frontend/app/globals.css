@@ -17,6 +17,8 @@
   --radius-50: 50px;
   --radius-25: 25px;
 
+  --text-50: 50px;
+  
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

@@ -1,10 +1,11 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { usePathname } from 'next/navigation'
+import Tabletoolbar from './Tabletoolbar'
 
 interface DynamicTableProps {
-  data: Record<string, any>[] // array of objects
+  data: Record<string, any>[]
 }
 
 const headerMap: Record<string, string> = {
@@ -18,47 +19,24 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data = [] }) => {
   const pathname = usePathname()
   const headerTitle = headerMap[pathname] || 'Dashboard'
 
-  // Dynamically get headers from the first object keys
+  // Dynamically get headers
   const headers = data.length > 0 ? Object.keys(data[0]) : []
+
+  // Dropdown state
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <div className='flex flex-col gap-3 w-full h-screen'>
-      <header className="pl-10 pt-5 text-6xl font-semibold">
+      <header className="pl-10 pt-5 text-50 font-semibold">
         {headerTitle}
       </header>
 
-      <section className='flex flex-row'>
-        <div className="flex flex-row items-center w-full px-10 pt-5">
-          <div className='flex flex-row justify-start gap-3'>
-            <input
-              type="search"
-              placeholder="Search 1"
-              className="p-2.5 w-40 text-sm bg-white rounded-2xl"
-            />
-            <input
-              type="search"
-              placeholder="Search 2"
-              className="p-2.5 w-40 text-sm bg-white rounded-2xl"
-            />
-          </div>
-          <div className='flex flex-row w-full justify-end gap-3'>
-            <input
-              type="search"
-              placeholder="Search 3"
-              className="p-2.5 w-40 text-sm bg-white rounded-2xl"
-            />
-            <input
-              type="search"
-              placeholder="Search 4"
-              className="p-2.5 w-40 text-sm bg-white rounded-2xl"
-            />
-          </div>
-        </div>
-      </section>
+      <Tabletoolbar />
 
+      {/* Table */}
       <main className='h-full'>
-        <div className=" shadow-md sm:rounded-lg px-10 pt-5 h-full rounded-25">
-          <table className="w-full h-full text-sm text-left text-gray-500 dark:text-gray-400">
+        <div className="shadow-md sm:rounded-lg px-10 pt-5 rounded-25">
+          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 ">
               <tr>
                 {headers.map((header) => (
@@ -73,22 +51,22 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data = [] }) => {
               {data.map((row, index) => (
                 <tr
                   key={index}
-                  className={`h-16 border-b dark:border-gray-700 border-gray-200 ${
-                    index % 2 === 0
-                      ? 'bg-gray-50 dark:bg-gray-800'
-                      : 'bg-white dark:bg-gray-900'
-                  }`}
+                  className={`border-b dark:border-gray-700 border-gray-200 ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-900'
+                    }`}
                 >
                   {headers.map((key) => (
                     <td
                       key={key}
-                      className="px-6 py-1 h-1 font-medium text-gray-900 dark:text-white whitespace-nowrap"
+                      className="px-3 text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap leading-tight"
                     >
                       {row[key]}
                     </td>
                   ))}
-                  <td className='px-6 py-1 h-1 font-medium text-gray-900 dark:text-white whitespace-nowrap'>Edit</td>
+                  <td className="px-3 py-2 text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap leading-tight">
+                    Edit
+                  </td>
                 </tr>
+
               ))}
             </tbody>
           </table>
