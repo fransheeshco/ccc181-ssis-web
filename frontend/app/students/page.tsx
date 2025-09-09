@@ -1,26 +1,30 @@
-import React from 'react'
+import DynamicTable from '@/components/DynamicTable'
 import SideBar from '@/components/SideBar'
-import Dashboard from '@/components/DashboardComponent'
 
-const students = [
-  { studentId: 'S001', fname: 'John', lname: 'Doe', program: 'BSCS', college: 'Engineering', gender: 'Male', yearLevel: 3 },
-  { studentId: 'S002', fname: 'Jane', lname: 'Smith', program: 'BSIT', college: 'Engineering', gender: 'Female', yearLevel: 2 },
-  { studentId: 'S003', fname: 'Michael', lname: 'Johnson', program: 'BSBA', college: 'Business', gender: 'Male', yearLevel: 4 },
-  { studentId: 'S004', fname: 'Emily', lname: 'Davis', program: 'BSCS', college: 'Engineering', gender: 'Female', yearLevel: 1 },
-  { studentId: 'S005', fname: 'William', lname: 'Brown', program: 'BSIT', college: 'Engineering', gender: 'Male', yearLevel: 2 }
-]
+// simulated db query
+const allStudents = Array.from({ length: 42 }, (_, i) => ({
+  id: i + 1,
+  name: `Student ${i + 1}`,
+}))
 
-function page() {
+export default async function StudentsPage({ searchParams }: { searchParams: { page?: string } }) {
+    const { page } = await searchParams
+  const currentPage = Number(page) || 1
+  const rowsPerPage = 9
+  const totalPages = Math.ceil(allStudents.length / rowsPerPage)
+
+  const startIndex = (currentPage - 1) * rowsPerPage
+  const currentData = allStudents.slice(startIndex, startIndex + rowsPerPage)
+
   return (
-    <>
     <div className='flex flex-row'>
-      <SideBar /> 
-      <Dashboard data={students} />
+      <SideBar />
+      <DynamicTable
+        data={currentData}
+        headerTitle="Student Management"
+        page={currentPage}
+        totalPages={totalPages}
+      />
     </div>
-      
-    </>
-
   )
 }
-
-export default page

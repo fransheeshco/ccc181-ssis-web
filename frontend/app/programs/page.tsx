@@ -1,26 +1,29 @@
-import React from 'react'
 import SideBar from '@/components/SideBar'
-import Dashboard from '@/components/DashboardComponent'
+import DynamicTable from '@/components/DynamicTable'
 
-const programs = [
-  { programCode: "BSCS", programName: "Bachelors of Science in Computer Science", collegeCode: "CCS" },
-  { programCode: "BSCS", programName: "Bachelors of Science in Computer Science", collegeCode: "CCS" },
-  { programCode: "BSCS", programName: "Bachelors of Science in Computer Science", collegeCode: "CCS" },
-  { programCode: "BSCS", programName: "Bachelors of Science in Computer Science", collegeCode: "CCS" },
-  { programCode: "BSCS", programName: "Bachelors of Science in Computer Science", collegeCode: "CCS" }
-]
+const allPrograms = Array.from({ length: 42 }, (_, i) => ({
+  programCode: i + 1,
+  programName: `Program ${i + 1}`,
+  collegeCode: `College ${i + 1}`,
+}))
 
-function page() {
+export default async function ProgramPage({ searchParams }: { searchParams: { page?: string }}) {
+  const { page } = await searchParams
+  const currentPage = Number(page) || 1
+  const rowsPerPage = 9
+  const totalPages = Math.ceil(allPrograms.length / rowsPerPage)
+
+  const startIndex = (currentPage - 1) * rowsPerPage
+  const currentData = allPrograms.slice(startIndex, startIndex + rowsPerPage)
+
   return (
-    <>
     <div className='flex flex-row'>
       <SideBar /> 
-      <Dashboard data={programs} />
+      <DynamicTable
+        headerTitle="Program Management" 
+        data={currentData}         
+        page={currentPage}
+        totalPages={totalPages}/>
     </div>
-      
-    </>
-
   )
 }
-
-export default page

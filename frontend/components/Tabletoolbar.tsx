@@ -6,6 +6,12 @@ function Tabletoolbar() {
     return (
         <div className="flex flex-row items-center w-full px-10">
             <div className="flex gap-3">
+                <img 
+                    src="/leading-icon.png"
+                    width={21}
+                    height={21}
+                    alt='search-icon'
+                />
                 <input type="search" placeholder="Search 1" className="p-2 w-40 h-10 text-sm bg-white rounded-2xl" />
                 <Dropdown label="Filter By" items={['Dashboard', 'Settings', 'Earnings', 'Sign out']} />
             </div>

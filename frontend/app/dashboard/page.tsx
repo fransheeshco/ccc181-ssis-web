@@ -1,6 +1,6 @@
 import React from 'react'
 import SideBar from '@/components/SideBar'
-import Dashboard from '@/components/DashboardComponent'
+import Dashboard from '@/components/DynamicTable'
 
 function page() {
   return (
