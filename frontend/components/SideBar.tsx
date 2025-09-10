@@ -5,10 +5,10 @@ import { usePathname } from 'next/navigation'
 import Link from "next/link"
 
 const navItems = [
-  { name: "Home", path: "/dashboard" },
-  { name: "Students", path: "/students" },
-  { name: "Programs", path: "/programs" },
-  { name: "Colleges", path: "/colleges" }
+  { name: "Home", iconChosen: "/home-black.png", iconNotChosen: "/home-white.png", path: "/dashboard" },
+  { name: "Students", iconChosen: "/student-black.png", iconNotChosen: "/student-white.png", path: "/students" },
+  { name: "Programs", iconChosen: "/book-black.png", iconNotChosen: "/book-white.png", path: "/programs" },
+  { name: "Colleges", iconChosen: "/school-black.png", iconNotChosen: "/school-white.png", path: "/colleges" }
 ]
 
 function SideBar() {
@@ -16,7 +16,8 @@ function SideBar() {
 
   return (
     <aside className="h-screen w-65 bg-sidebarbg text-white flex flex-col rounded-tr-[50px] rounded-br-[50px]">
-      <div className="bg-sidebarheader p-7 rounded-tr-[50px] rounded-br-[45px] flex items-center justify-start">
+      {/* Header */}
+      <div className="bg-sidebarheader p-7 rounded-tr-[50px] rounded-br-[45px] flex items-center justify-start gap-3">
         <img 
           src="/OracleLogo.png" 
           width={50} 
@@ -26,6 +27,8 @@ function SideBar() {
         />
         <h1 className="text-4xl font-bold">Oracle</h1>
       </div>
+
+      {/* Nav */}
       <div className="pt-5">
         <nav className="flex flex-col gap-3">
           {navItems.map((item) => {
@@ -46,14 +49,20 @@ function SideBar() {
                     rounded-tr-[25px] rounded-br-[25px]
                   `}
                 />
-                {/* Text */}
+
+                {/* Icon + Text */}
                 <span
                   className={`
-                    relative z-10 block p-5 
+                    relative z-10 flex items-center gap-3 p-5 
                     ${isActive ? "text-black" : "text-white"} 
                     group-hover:text-black
                   `}
                 >
+                  <img 
+                    src={isActive ? item.iconChosen : item.iconNotChosen} 
+                    alt={`${item.name} icon`} 
+                    className="w-5 h-5 object-contain"
+                  />
                   {item.name}
                 </span>
               </Link>

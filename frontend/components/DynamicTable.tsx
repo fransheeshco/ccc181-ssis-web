@@ -1,25 +1,49 @@
-import React from "react"
-import Tabletoolbar from "./Tabletoolbar"
+import Image from "next/image"
 import Link from "next/link"
+import Tabletoolbar from "@/components/Tabletoolbar"
 
 interface DynamicTableProps {
   data: Record<string, any>[]
   headerTitle: string
-  page: number
   totalPages: number
+  currentPage: number
+  extraParams?: { [key: string]: string | string[] | undefined }
   showActions?: boolean
 }
 
 const capitalize = (text: string) =>
   text.charAt(0).toUpperCase() + text.slice(1)
 
-const DynamicTable: React.FC<DynamicTableProps> = ({
+// helper for keeping filters/sorts in pagination links
+const createPageLink = (
+  page: number,
+  params?: { [key: string]: string | string[] | undefined }
+) => {
+  const urlParams = new URLSearchParams()
+
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      if (key === "page") continue // overwrite with new page
+      if (Array.isArray(value)) {
+        value.forEach((v) => urlParams.append(key, v))
+      } else if (value) {
+        urlParams.set(key, value)
+      }
+    }
+  }
+
+  urlParams.set("page", String(page))
+  return `?${urlParams.toString()}`
+}
+
+export default function DynamicTable({
   data = [],
   headerTitle,
-  page,
   totalPages,
+  currentPage,
+  extraParams,
   showActions = true,
-}) => {
+}: DynamicTableProps) {
   const headers = data.length > 0 ? Object.keys(data[0]) : []
 
   return (
@@ -32,13 +56,14 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
       {/* Toolbar */}
       <Tabletoolbar />
 
-      {/* Table */}
+      {/* Table + Pagination */}
       <main className="h-full px-10">
         <div className="shadow-md sm:rounded-lg rounded-2xl h-full flex flex-col">
-          <div className="relative overflow-auto h-130">
-            <table className="w-full text-sm text-left text-gray-600 dark:text-gray-400">
+          {/* Table Section (fills available space) */}
+          <div className="flex-grow">
+            <table className="w-full text-sm text-left text-gray-600 dark:text-gray-400 h-full">
               {/* Table Head */}
-              <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 sticky top-0">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-300 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                   {headers.map((header) => (
                     <th key={header} scope="col" className="px-6 py-3">
@@ -71,15 +96,29 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
                       ))}
                       {showActions && (
                         <td className="px-6 py-4">
-                          <button className="text-blue-600 hover:underline">
-                            Edit
-                          </button>
+                          <div className="flex flex-row gap-3">
+                            <button className="hover:cursor-pointer">
+                              <Image
+                                src="/edit.png"
+                                alt="Edit"
+                                width={19}
+                                height={19}
+                              />
+                            </button>
+                            <button className="hover:cursor-pointer">
+                              <Image
+                                src="/trash.png"
+                                alt="Delete"
+                                width={23}
+                                height={23}
+                              />
+                            </button>
+                          </div>
                         </td>
                       )}
                     </tr>
                   ))
                 ) : (
-                  // Empty State → show placeholder rows
                   <tr>
                     <td
                       colSpan={headers.length + (showActions ? 1 : 0)}
@@ -93,25 +132,25 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
             </table>
           </div>
 
-          {/* Pagination Controls */}
-          <div className="flex justify-between items-center mt-4 px-6 pb-4">
+          {/* Pagination always at bottom */}
+          <div className="flex justify-between items-center mt-auto px-6 py- pb-4">
             <Link
-              href={`?page=${page - 1}`}
+              href={createPageLink(currentPage - 1, extraParams)}
               className={`px-4 py-2 bg-gray-200 rounded ${
-                page === 1 ? "opacity-50 pointer-events-none" : ""
+                currentPage === 1 ? "opacity-50 pointer-events-none" : ""
               }`}
             >
               Previous
             </Link>
 
             <span>
-              Page {page} of {totalPages}
+              Page {currentPage} of {totalPages}
             </span>
 
             <Link
-              href={`?page=${page + 1}`}
+              href={createPageLink(currentPage + 1, extraParams)}
               className={`px-4 py-2 bg-gray-200 rounded ${
-                page === totalPages ? "opacity-50 pointer-events-none" : ""
+                currentPage === totalPages ? "opacity-50 pointer-events-none" : ""
               }`}
             >
               Next
@@ -122,5 +161,3 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
     </div>
   )
 }
-
-export default DynamicTable

@@ -22,7 +22,7 @@ export default async function StudentsPage({ searchParams }: { searchParams: { p
       <DynamicTable
         data={currentData}
         headerTitle="Student Management"
-        page={currentPage}
+        currentPage={currentPage}
         totalPages={totalPages}
       />
     </div>

@@ -22,7 +22,7 @@ export default async function ProgramPage({ searchParams }: { searchParams: { pa
       <DynamicTable
         headerTitle="Program Management" 
         data={currentData}         
-        page={currentPage}
+        currentPage={currentPage}
         totalPages={totalPages}/>
     </div>
   )

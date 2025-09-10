@@ -1,5 +1,4 @@
 import SideBar from '@/components/SideBar'
-import Dashboard from '@/components/DynamicTable'
 import DynamicTable from '@/components/DynamicTable'
 
 const allCollege = Array.from({ length: 42 }, (_, i) => ({
@@ -21,7 +20,7 @@ export default async function CollegePage({ searchParams }: { searchParams: { pa
       <SideBar /> 
       <DynamicTable 
         headerTitle='College Management' 
-        page={currentPage} 
+        currentPage={currentPage} 
         totalPages={totalPages} 
         data={currentData} />
     </div>
