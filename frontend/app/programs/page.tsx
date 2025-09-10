@@ -1,29 +1,48 @@
-import SideBar from '@/components/SideBar'
-import DynamicTable from '@/components/DynamicTable'
+import { columns, Program } from "./columns"
+import { DataTable } from "@/components/ui/data-table"
 
-const allPrograms = Array.from({ length: 42 }, (_, i) => ({
-  programCode: i + 1,
-  programName: `Program ${i + 1}`,
-  collegeCode: `College ${i + 1}`,
-}))
+async function getData(): Promise<Program[]> {
+  // Fetch data from your API here.
+  return [
+    {
+      programCode: "BSCS",
+      programName: "Francis",
+      collegeCode: "CCS"
+    },
+    {
+      programCode: "BSCS",
+      programName: "Francis",
+      collegeCode: "CCS"
+    },
+    {
+      programCode: "BSCS",
+      programName: "Francis",
+      collegeCode: "CCS"
+    },
+    {
+      programCode: "BSCS",
+      programName: "Francis",
+      collegeCode: "CCS"
+    },
+    {
+      programCode: "BSCS",
+      programName: "Francis",
+      collegeCode: "CCS"
+    },
+    {
+      programCode: "BSCS",
+      programName: "Francis",
+      collegeCode: "CCS"
+    },
+  ]
+}
 
-export default async function ProgramPage({ searchParams }: { searchParams: { page?: string }}) {
-  const { page } = await searchParams
-  const currentPage = Number(page) || 1
-  const rowsPerPage = 9
-  const totalPages = Math.ceil(allPrograms.length / rowsPerPage)
-
-  const startIndex = (currentPage - 1) * rowsPerPage
-  const currentData = allPrograms.slice(startIndex, startIndex + rowsPerPage)
+export default async function DemoPage() {
+  const data = await getData()
 
   return (
-    <div className='flex flex-row'>
-      <SideBar /> 
-      <DynamicTable
-        headerTitle="Program Management" 
-        data={currentData}         
-        currentPage={currentPage}
-        totalPages={totalPages}/>
+    <div className="container mx-auto py-10">
+      <DataTable columns={columns} data={data} />
     </div>
   )
 }
