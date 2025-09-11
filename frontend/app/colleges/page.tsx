@@ -37,12 +37,15 @@ export default async function DemoPage() {
 
   return (
     <div className="container mx-auto">
-      <div className="flex flex-row justify-between">
-        <section className="text-6xl">College Management</section>
-        <AddCollegeDialogue label="College" />        
-      </div>
-
-      <DataTable columns={columns} data={data} />
+      <section className="text-6xl">College Management</section>
+      <DataTable
+        columns={columns}
+        data={data}
+        toolBarComponent={{
+          Component: AddCollegeDialogue,
+          props: { label: "College" }
+        }}
+      />
     </div>
   )
 }

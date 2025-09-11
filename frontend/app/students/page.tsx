@@ -62,12 +62,16 @@ export default async function DemoPage() {
 
   return (
     <div className="container mx-auto">
-      <div className="flex flex-row w-full justify-between">
-        <section className="text-6xl">Student Management</section>
-        <AddStudentDialog label="Students"/>
-      </div>
-      
-      <DataTable columns={columns} data={data} />
+      <section className="text-6xl">Student Management</section>
+
+      <DataTable
+        columns={columns}
+        data={data}
+        toolBarComponent={{
+          Component: AddStudentDialog,
+          props: { label: "Student" }
+        }}
+      />
     </div>
   )
 }

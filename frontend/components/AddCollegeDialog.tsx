@@ -28,8 +28,8 @@ import {
 
 
 const formSchema = z.object({
-    collegeCode: z.string().min(1),
-    collegeName: z.string().min(1)
+  collegeCode: z.string().min(1),
+  collegeName: z.string().min(1)
 })
 
 interface AddStudentDialogProps {
@@ -49,10 +49,10 @@ export function AddCollegeDialogue({ label }: AddStudentDialogProps) {
     console.log(values)
   }
 
-return (
+  return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="my-auto p-6">Add College</Button>
+        <Button>Add College</Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-md">

@@ -10,25 +10,25 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Table } from "@tanstack/react-table"
-import { usePathname } from "next/navigation"
-import { AddStudentDialog } from "@/components/AddStudentDialogue"
-import { AddCollegeDialogue } from "@/components/AddCollegeDialog"
-import { AddProgramDialog } from "@/components/AddProgramDialog"
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>,
-  children?: React.ReactNode
+  component?: {
+    Component: React.ComponentType<any>
+    props?: Record<string, any>
+  }
 }
 
 export function DataTableToolbar<TData>({
   table,
-  children
+  component
 }: DataTableToolbarProps<TData>) {
+  const Comp = component?.Component
+
   return (
     <div className="flex w-full justify-between items-center py-4">
       <InputWithButton />
       <div className="flex gap-3">
-        {children}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -55,6 +55,7 @@ export function DataTableToolbar<TData>({
               })}
           </DropdownMenuContent>
         </DropdownMenu>
+        {Comp && <Comp {...(component ?? {})} />}
       </div>
     </div>
   )

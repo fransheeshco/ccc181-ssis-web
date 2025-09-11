@@ -60,7 +60,7 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
 return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="my-auto p-6">Add Student</Button>
+        <Button>Add Student</Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-md">

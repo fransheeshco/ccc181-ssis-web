@@ -35,47 +35,47 @@ async function getData(): Promise<Program[]> {
       programName: "Francis",
       collegeCode: "CCS"
     },
-        {
+    {
       programCode: "BSCS",
       programName: "Francis",
       collegeCode: "CCS"
     },
-        {
+    {
       programCode: "BSCS",
       programName: "Francis",
       collegeCode: "CCS"
     },
-        {
+    {
       programCode: "BSCS",
       programName: "Francis",
       collegeCode: "CCS"
     },
-            {
+    {
       programCode: "BSCS",
       programName: "Francis",
       collegeCode: "CCS"
     },
-            {
+    {
       programCode: "BSCS",
       programName: "Francis",
       collegeCode: "CCS"
     },
-            {
+    {
       programCode: "BSCS",
       programName: "Francis",
       collegeCode: "CCS"
     },
-            {
+    {
       programCode: "BSCS",
       programName: "Francis",
       collegeCode: "CCS"
     },
-            {
+    {
       programCode: "BSCS",
       programName: "Francis",
       collegeCode: "CCS"
     },
-            {
+    {
       programCode: "BSCS",
       programName: "Francis",
       collegeCode: "CCS"
@@ -84,15 +84,19 @@ async function getData(): Promise<Program[]> {
 }
 
 export default async function DemoPage() {
-  const data = await getData()
+  const data: Program[] = await getData()
 
   return (
     <div className="container mx-auto">
-      <div className="flex flex-row justify-between">
-        <section className="text-6xl">Program Management</section>
-        <AddProgramDialog label="Program"/>
-      </div>
-      <DataTable columns={columns} data={data} /> 
+      <section className="text-6xl">Program Management</section>
+      <DataTable
+        columns={columns}
+        data={data}
+        toolBarComponent={{
+          Component: AddProgramDialog,
+          props: { label: "Program" }
+        }}
+      />
     </div>
   )
 }

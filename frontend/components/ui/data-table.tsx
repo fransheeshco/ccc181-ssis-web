@@ -23,11 +23,16 @@ import { DataTableToolbar } from "@/components/ui/toolbar" // Adjust import path
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  toolBarComponent?: {
+    Component: React.ComponentType<any>
+    props?: Record<string, any>
+  }
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  toolBarComponent
 }: DataTableProps<TData, TValue>) {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
@@ -48,7 +53,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="w-full flex-1">
       {/* Use the toolbar component and pass the table instance */}
-      <DataTableToolbar table={table} />
+      <DataTableToolbar table={table} component={toolBarComponent} />
       
       <div className="h-full overflow-hidden rounded-md border">
         <Table>
