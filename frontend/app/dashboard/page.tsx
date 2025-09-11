@@ -7,7 +7,6 @@ function page() {
     <>
     <div className='flex flex-row'>
       <SideBar /> 
-      <Dashboard />
     </div>
       
     </>

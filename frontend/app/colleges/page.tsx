@@ -1,5 +1,6 @@
 import { columns, College } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
+import { AddCollegeDialogue } from "@/components/AddCollegeDialog"
 
 async function getData(): Promise<College[]> {
   // Fetch data from your API here.
@@ -35,7 +36,12 @@ export default async function DemoPage() {
   const data = await getData()
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto">
+      <div className="flex flex-row justify-between">
+        <section className="text-6xl">College Management</section>
+        <AddCollegeDialogue label="College" />        
+      </div>
+
       <DataTable columns={columns} data={data} />
     </div>
   )
