@@ -8,7 +8,9 @@ import {
   getCoreRowModel,
   useReactTable,
   VisibilityState,
-  getPaginationRowModel
+  getPaginationRowModel,
+  SortingState,
+  getSortedRowModel
 } from "@tanstack/react-table"
 import {
   Table,
@@ -36,7 +38,9 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
-  
+  const [sorting, setSorting] = React.useState<SortingState>([])
+
+
   const table = useReactTable({
     data,
     columns,
@@ -44,9 +48,12 @@ export function DataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     getPaginationRowModel: getPaginationRowModel(),
     onRowSelectionChange: setRowSelection,
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
     state: {
       columnVisibility,
       rowSelection,
+      sorting
     }
   })
 
@@ -54,7 +61,7 @@ export function DataTable<TData, TValue>({
     <div className="w-full flex-1">
       {/* Use the toolbar component and pass the table instance */}
       <DataTableToolbar table={table} component={toolBarComponent} />
-      
+
       <div className="h-full overflow-hidden rounded-md border">
         <Table>
           <TableHeader>
@@ -62,13 +69,13 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead className="bg-gray-100" key={header.id}>
+                    <TableHead className=" bg-gray-100" key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   )
                 })}
