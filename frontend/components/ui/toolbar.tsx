@@ -24,6 +24,7 @@ export function DataTableToolbar<TData>({
   component
 }: DataTableToolbarProps<TData>) {
   const Comp = component?.Component
+  const [selectedColumnId, setSelectedColumnId] = React.useState<string | null>(null)
 
   return (
     <div className="flex w-full justify-between items-center py-4">
@@ -32,7 +33,7 @@ export function DataTableToolbar<TData>({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              Filter By:
+              {selectedColumnId ? `${selectedColumnId}` : "Filter By:"}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -40,16 +41,23 @@ export function DataTableToolbar<TData>({
               .getAllColumns()
               .filter((column) => column.getCanHide())
               .map((column) => {
+                const header =
+                  (column.columnDef.meta as any)?.label || column.id;
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
                     className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
+                    checked={selectedColumnId === column.columnDef.header}
+                    onCheckedChange={(value) => {
+                      if (value) {
+                        setSelectedColumnId(header)
+                      } else {
+                        setSelectedColumnId(null)
+                      }
+                    }
                     }
                   >
-                    {column.id}
+                    {header}
                   </DropdownMenuCheckboxItem>
                 )
               })}

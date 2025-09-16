@@ -55,6 +55,9 @@ export const columns: ColumnDef<College>[] = [
                 </Button>
             )
         },
+        meta: {
+            label: "College Code"
+        }
     },
     {
         accessorKey: "collegeName",
@@ -68,6 +71,9 @@ export const columns: ColumnDef<College>[] = [
                 </Button>
             )
         },
+        meta: {
+            label: "College Name"
+        }
     },
     {
         id: "actions",

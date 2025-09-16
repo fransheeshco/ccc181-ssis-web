@@ -60,6 +60,9 @@ export const columns: ColumnDef<Student>[] = [
                 </Button>
             )
         },
+        meta: {
+            label: "ID Number"
+        }
     },
     {
         accessorKey: "firstName",
@@ -74,6 +77,9 @@ export const columns: ColumnDef<Student>[] = [
                 </Button>
             )
         },
+        meta: {
+            label: "First Name"
+        }
     },
     {
         accessorKey: "lastName",
@@ -88,6 +94,9 @@ export const columns: ColumnDef<Student>[] = [
                 </Button>
             )
         },
+        meta: {
+            label: "Last Name"
+        }
     },
     {
         accessorKey: "program",
@@ -102,6 +111,9 @@ export const columns: ColumnDef<Student>[] = [
                 </Button>
             )
         },
+        meta: {
+            label: "Program"
+        }
     },
     {
         accessorKey: "yearLevel",
@@ -116,6 +128,9 @@ export const columns: ColumnDef<Student>[] = [
                 </Button>
             )
         },
+        meta: {
+            label: "Year Level"
+        }
     },
     {
         accessorKey: "gender",
@@ -125,11 +140,14 @@ export const columns: ColumnDef<Student>[] = [
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Email
+                    Gender
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
+        meta: {
+            label: "Gender"
+        }
     },
     {
         id: "actions",

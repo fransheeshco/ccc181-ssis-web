@@ -56,6 +56,9 @@ export const columns: ColumnDef<Program>[] = [
                 </Button>
             )
         },
+                meta: {
+            label: "Program Code"
+        }
     },
     {
         accessorKey: "programName",
@@ -70,6 +73,9 @@ export const columns: ColumnDef<Program>[] = [
                 </Button>
             )
         },
+                meta: {
+            label: "Program Name"
+        }
     },
     {
         accessorKey: "collegeCode",
@@ -84,6 +90,9 @@ export const columns: ColumnDef<Program>[] = [
                 </Button>
             )
         },
+                meta: {
+            label: "College Code"
+        }
     },
     {
         id: "actions",
