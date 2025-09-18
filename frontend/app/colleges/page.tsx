@@ -1,6 +1,6 @@
 import { columns, College } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
-import { AddCollegeDialogue } from "@/components/AddCollegeDialog"
+import { AddCollegeDialogue } from "@/components/forms/AddCollegeDialog"
 
 async function getData(): Promise<College[]> {
   // Fetch data from your API here.

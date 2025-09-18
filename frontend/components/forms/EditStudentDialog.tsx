@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { useEffect, useState } from "react"
 import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
@@ -29,44 +30,50 @@ import {
 
 const formSchema = z.object({
   idNumber: z.string().min(1),
-  firstname: z.string().min(1),
+  firstName: z.string().min(1),
   lastName: z.string().min(1),
   program: z.string().min(1),
-  year: z.number().int(),
+  yearLevel: z.number().int(),
   gender: z.string().min(1),
 })
 
-interface AddStudentDialogProps {
-  label: string
-}
 
-export function AddStudentDialog({ label }: AddStudentDialogProps) {
+type Student = z.infer<typeof formSchema>
+
+export function EditStudentDialog({ student }: { student: Student }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       idNumber: "",
-      firstname: "John",
+      firstName: "John",
       lastName: "Doe",
       program: "College",
-      year: 1,
+      yearLevel: 1,
       gender: "Male",
     },
   })
+  const [open, setOpen] = useState(false)
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
+    useEffect(() => {
+    if (student) {
+      form.reset(student)
+    }
+  }, [student, form])
+
+  function onSubmit(values: Student) {
+    console.log("Updating student:", values)
   }
 
 return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button>Add Student</Button>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild className="m-2">
+        <Button>Edit Student</Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Student</DialogTitle>
-          <DialogDescription>Fill in the form to add a new student.</DialogDescription>
+          <DialogTitle>Edit Student</DialogTitle>
+          <DialogDescription>Fill in the form to edit student information.</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -90,7 +97,7 @@ return (
 
             <FormField
               control={form.control}
-              name="firstname"
+              name="firstName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>First Name</FormLabel>
@@ -132,7 +139,7 @@ return (
 
             <FormField
               control={form.control}
-              name="year"
+              name="yearLevel"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Year</FormLabel>

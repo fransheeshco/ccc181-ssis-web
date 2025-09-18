@@ -1,6 +1,6 @@
 import { columns, Student } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
-import { AddStudentDialog } from "@/components/AddStudentDialogue"
+import { AddStudentDialog } from "@/components/forms/AddStudentDialogue"
 import { DataTableToolbar } from "@/components/ui/toolbar"
 
 async function getData(): Promise<Student[]> {

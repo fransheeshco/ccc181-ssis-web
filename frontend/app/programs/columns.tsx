@@ -1,8 +1,10 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal } from "lucide-react"
+import { Delete, MoreHorizontal } from "lucide-react"
 import { ArrowUpDown } from "lucide-react"
+import { EditProgramDialog } from "@/components/forms/EditProgramDialog"
+import { DeleteDialog } from "@/components/forms/DeleteDialog"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -56,13 +58,13 @@ export const columns: ColumnDef<Program>[] = [
                 </Button>
             )
         },
-                meta: {
+        meta: {
             label: "Program Code"
         }
     },
     {
         accessorKey: "programName",
-                header: ({ column }) => {
+        header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
@@ -73,13 +75,13 @@ export const columns: ColumnDef<Program>[] = [
                 </Button>
             )
         },
-                meta: {
+        meta: {
             label: "Program Name"
         }
     },
     {
         accessorKey: "collegeCode",
-                header: ({ column }) => {
+        header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
@@ -90,7 +92,7 @@ export const columns: ColumnDef<Program>[] = [
                 </Button>
             )
         },
-                meta: {
+        meta: {
             label: "College Code"
         }
     },
@@ -108,16 +110,20 @@ export const columns: ColumnDef<Program>[] = [
                             <MoreHorizontal className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(program.programCode)}
-                        >
-                            Copy Program Code
+                    <DropdownMenuContent align="end" className="flex flex-col">
+                        <DropdownMenuItem asChild>
+                            <DropdownMenuItem asChild>
+                                <EditProgramDialog program={program} />
+                            </DropdownMenuItem>
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <DropdownMenuItem asChild>
+                                <DeleteDialog
+                                    itemName={program.programCode + ": " + program.programName}
+                                    onConfirm={() => console.log("Delete program:", program.programCode)}
+                                />
+                            </DropdownMenuItem>
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )

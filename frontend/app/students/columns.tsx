@@ -1,9 +1,10 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal } from "lucide-react"
+import { Edit, MoreHorizontal } from "lucide-react"
 import { ArrowUpDown } from "lucide-react"
-
+import { EditStudentDialog } from "@/components/forms/EditStudentDialog"
+import { DeleteDialog } from "@/components/forms/DeleteDialog"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -163,16 +164,20 @@ export const columns: ColumnDef<Student>[] = [
                             <MoreHorizontal className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(student.idNumber)}
-                        >
-                            Copy Student ID
+                    <DropdownMenuContent align="end" className="flex flex-col">
+                        <DropdownMenuItem asChild>
+                            <DropdownMenuItem asChild>
+                                <EditStudentDialog student={student} />
+                            </DropdownMenuItem>
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <DropdownMenuItem asChild>
+                                <DeleteDialog
+                                    itemName={student.idNumber + ": " + student.lastName}
+                                    onConfirm={() => console.log("Delete Student:", student.idNumber)}
+                                />
+                            </DropdownMenuItem>
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )

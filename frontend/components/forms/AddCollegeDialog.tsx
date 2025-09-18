@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { useState } from "react"
 import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
@@ -28,39 +29,38 @@ import {
 
 
 const formSchema = z.object({
-    programCode: z.string().min(1),
-    programName: z.string().min(1),
-    collegeCode: z.string().min(1),
+  collegeCode: z.string().min(1),
+  collegeName: z.string().min(1)
 })
 
-interface AddStudentDialogProps {
+interface AddCollegeDialogueProps {
   label: string
 }
 
-export function AddProgramDialog({ label }: AddStudentDialogProps) {
+export function AddCollegeDialogue({ label }: AddCollegeDialogueProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      programCode: "BSCS",
-      programName: "Bachelors of Science in Computer Science",
-      collegeCode: "CCS"
+      collegeCode: "CCS",
+      collegeName: "College of Computer Studies",
     },
   })
+  const [open, setOpen] = useState(false)
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values)
   }
 
-return (
-    <Dialog>
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Add Program</Button>
+        <Button>Add College</Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Program</DialogTitle>
-          <DialogDescription>Fill in the form to add a new Program.</DialogDescription>
+          <DialogTitle>Add College</DialogTitle>
+          <DialogDescription>Fill in the form to add a new College.</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -68,34 +68,6 @@ return (
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4"
           >
-            <FormField
-              control={form.control}
-              name="programCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Program Code</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter Program Code" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="programName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Program Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter program name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <FormField
               control={form.control}
               name="collegeCode"
@@ -109,6 +81,21 @@ return (
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="collegeName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>College Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter College Name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
 
             <DialogFooter>
               <Button type="submit">Submit</Button>

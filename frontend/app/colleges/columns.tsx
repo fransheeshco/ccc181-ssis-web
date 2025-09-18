@@ -3,6 +3,8 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal } from "lucide-react"
 import { ArrowUpDown } from "lucide-react"
+import { EditCollegeDialogue } from "@/components/forms/EditCollegeDialog"
+import { DeleteDialog } from "@/components/forms/DeleteDialog"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -89,16 +91,20 @@ export const columns: ColumnDef<College>[] = [
                             <MoreHorizontal className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(college.collegeCode)}
-                        >
-                            Copy Student ID
+                    <DropdownMenuContent align="end" className="flex flex-col">
+                        <DropdownMenuItem asChild>
+                            <DropdownMenuItem asChild>
+                                <EditCollegeDialogue college={college} />
+                            </DropdownMenuItem>
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <DropdownMenuItem asChild>
+                                <DeleteDialog
+                                    itemName={college.collegeCode + ": " + college.collegeName}
+                                    onConfirm={() => console.log("Delete college:", college.collegeCode)}
+                                />
+                            </DropdownMenuItem>
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )

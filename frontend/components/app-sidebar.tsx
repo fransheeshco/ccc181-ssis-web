@@ -35,28 +35,28 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Management</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="mt-1 gap-2">
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton asChild className="p-2">
                   <a href="/colleges">
-                    <School className="mr-2 h-4 w-4" />
-                    College
+                    <School className="mr-2 h-16 w-16" />
+                    <h1 className="text-3xl font-bold" >College</h1>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton asChild className="p-2">
                   <a href="/students">
-                    <Users className="mr-2 h-4 w-4" />
-                    Students
+                    <Users className="mr-2 h-16 w-16" />
+                    <h1 className="text-3xl font-bold">Students</h1>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton asChild className="p-2">
                   <a href="/programs">
-                    <BookOpen className="mr-2 h-4 w-4" />
-                    Program
+                    <BookOpen className="mr-2 h-16 w-16" />
+                    <h1 className="text-3xl font-bold">Program</h1>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>

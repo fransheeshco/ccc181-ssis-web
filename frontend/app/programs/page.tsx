@@ -1,6 +1,6 @@
 import { columns, Program } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
-import { AddProgramDialog } from "@/components/AddProgramDialog"
+import { AddProgramDialog } from "@/components/forms/AddProgramDialog"
 
 async function getData(): Promise<Program[]> {
   // Fetch data from your API here.
