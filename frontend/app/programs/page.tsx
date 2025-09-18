@@ -88,7 +88,7 @@ export default async function DemoPage() {
 
   return (
     <div className="container mx-auto">
-      <section className="text-6xl">Program Management</section>
+      <section className="text-6xl font-bold">Program Management</section>
       <DataTable
         columns={columns}
         data={data}
