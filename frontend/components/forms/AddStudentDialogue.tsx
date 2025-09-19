@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form"
 import { useState } from "react"
 import { z } from "zod"
 
+import { Plus } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -57,12 +59,13 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values)
+    setOpen(false)
   }
 
 return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Add Student</Button>
+        <Button><Plus className="h-24 w-24"/>Add Student</Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-md">

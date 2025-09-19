@@ -26,26 +26,6 @@ export type Program = {
 
 export const columns: ColumnDef<Program>[] = [
     {
-        id: "select",
-        header: ({ table }) => (
-            <Checkbox
-                checked={
-                    table.getIsAllPageRowsSelected() ||
-                    (table.getIsSomePageRowsSelected() && "indeterminate")
-                }
-                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                aria-label="Select all"
-            />
-        ),
-        cell: ({ row }) => (
-            <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label="Select row"
-            />
-        ),
-    },
-    {
         accessorKey: "programCode",
         header: ({ column }) => {
             return (
@@ -103,29 +83,13 @@ export const columns: ColumnDef<Program>[] = [
             const program = row.original
 
             return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="flex flex-col">
-                        <DropdownMenuItem asChild>
-                            <DropdownMenuItem asChild>
-                                <EditProgramDialog program={program} />
-                            </DropdownMenuItem>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <DropdownMenuItem asChild>
-                                <DeleteDialog
-                                    itemName={program.programCode + ": " + program.programName}
-                                    onConfirm={() => console.log("Delete program:", program.programCode)}
-                                />
-                            </DropdownMenuItem>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <>
+                    <EditProgramDialog program={program} />
+                    <DeleteDialog
+                        itemName={program.programCode + ": " + program.programName}
+                        onConfirm={() => console.log("Delete program:", program.programCode)}
+                    />
+                </>
             )
         },
     },

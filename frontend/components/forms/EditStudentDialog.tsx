@@ -26,6 +26,7 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Edit } from "lucide-react"
 
 
 const formSchema = z.object({
@@ -62,12 +63,13 @@ export function EditStudentDialog({ student }: { student: Student }) {
 
   function onSubmit(values: Student) {
     console.log("Updating student:", values)
+    setOpen(false)  
   }
 
 return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild className="m-2">
-        <Button>Edit Student</Button>
+        <Button><Edit className="h-6 w-6"/></Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-md">

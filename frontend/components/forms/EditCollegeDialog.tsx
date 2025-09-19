@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
+import { Edit } from "lucide-react"
 import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
@@ -57,12 +58,13 @@ export function EditCollegeDialogue({ college }: {college: College}) {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         console.log(values)
+        setOpen(false)  
     }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild className="m-2">
-                <Button>Edit College</Button>
+                <Button><Edit className="h-6 w-6"/></Button>
             </DialogTrigger>
 
             <DialogContent className="max-w-md">
