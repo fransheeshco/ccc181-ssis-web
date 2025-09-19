@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 
-import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu"
+import { Trash } from "lucide-react"
 
 interface DeleteDialogProps {
   onConfirm: () => void
@@ -26,7 +26,7 @@ export function DeleteDialog({onConfirm, itemName}: DeleteDialogProps) {
     return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild className="m-2">
-          <Button variant={'destructive'}>Delete</Button>
+          <Button variant={'destructive'}><Trash className="h-6 w-6" /></Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-md">

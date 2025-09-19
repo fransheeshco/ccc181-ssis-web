@@ -9,6 +9,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarTrigger
 } from "@/components/ui/sidebar"
 import { BookOpen, Users, Settings, School } from "lucide-react"
 import Image from "next/image"
@@ -16,8 +17,9 @@ import Image from "next/image"
 export function AppSidebar() {
   return (
     <Sidebar>
-      <SidebarHeader>
-        <div className="flex flex-row justify-start">
+      {/* ✅ Header with logo + title */}
+      <SidebarHeader className="bg-primary px-4 py-3">
+        <div className="flex items-center gap-3">
           <Image
             src="/OracleLogo.png"
             alt="Oracle-Logo"
@@ -25,38 +27,39 @@ export function AppSidebar() {
             height={40}
             className="rounded"
           />
-          <div className="text-5xl font-extrabold text-white">Oracle</div>
+          <span className="text-2xl font-extrabold text-white">
+            Oracle
+          </span>
         </div>
-
       </SidebarHeader>
 
       {/* ✅ Main navigation */}
-      <SidebarContent>
+      <SidebarContent className="bg-sidebarbg">
         <SidebarGroup>
-          <SidebarGroupLabel>Management</SidebarGroupLabel>
+          <SidebarGroupLabel className="px-4">Management</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="mt-1 gap-2">
+            <SidebarMenu className="mt-2 space-y-1">
               <SidebarMenuItem>
-                <SidebarMenuButton asChild className="p-2">
-                  <a href="/colleges">
-                    <School className="mr-2 h-16 w-16" />
-                    <h1 className="text-3xl font-bold" >College</h1>
+                <SidebarMenuButton asChild>
+                  <a href="/colleges" className="flex items-center gap-3 px-4 py-2">
+                    <School className="h-6 w-6" />
+                    <span className="text-lg font-semibold">College</span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild className="p-2">
-                  <a href="/students">
-                    <Users className="mr-2 h-16 w-16" />
-                    <h1 className="text-3xl font-bold">Students</h1>
+                <SidebarMenuButton asChild>
+                  <a href="/students" className="flex items-center gap-3 px-4 py-2">
+                    <Users className="h-6 w-6" />
+                    <span className="text-lg font-semibold">Students</span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild className="p-2">
-                  <a href="/programs">
-                    <BookOpen className="mr-2 h-16 w-16" />
-                    <h1 className="text-3xl font-bold">Program</h1>
+                <SidebarMenuButton asChild>
+                  <a href="/programs" className="flex items-center gap-3 px-4 py-2">
+                    <BookOpen className="h-6 w-6" />
+                    <span className="text-lg font-semibold">Program</span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -66,13 +69,13 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* ✅ Bottom footer */}
-      <SidebarFooter>
+      <SidebarFooter className="bg-sidebarbg px-4 py-3">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <a href="/settings">
-                <Settings className="mr-2 h-4 w-4" />
-                Settings
+              <a href="/settings" className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                <span>Settings</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

@@ -25,26 +25,6 @@ export type College = {
 
 export const columns: ColumnDef<College>[] = [
     {
-        id: "select",
-        header: ({ table }) => (
-            <Checkbox
-                checked={
-                    table.getIsAllPageRowsSelected() ||
-                    (table.getIsSomePageRowsSelected() && "indeterminate")
-                }
-                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                aria-label="Select all"
-            />
-        ),
-        cell: ({ row }) => (
-            <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label="Select row"
-            />
-        ),
-    },
-    {
         accessorKey: "collegeCode",
         header: ({ column }) => {
             return (
@@ -84,29 +64,13 @@ export const columns: ColumnDef<College>[] = [
             const college = row.original
 
             return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="flex flex-col">
-                        <DropdownMenuItem asChild>
-                            <DropdownMenuItem asChild>
-                                <EditCollegeDialogue college={college} />
-                            </DropdownMenuItem>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <DropdownMenuItem asChild>
-                                <DeleteDialog
-                                    itemName={college.collegeCode + ": " + college.collegeName}
-                                    onConfirm={() => console.log("Delete college:", college.collegeCode)}
-                                />
-                            </DropdownMenuItem>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <>
+                    <EditCollegeDialogue college={college} />
+                    <DeleteDialog
+                        itemName={college.collegeCode + ": " + college.collegeName}
+                        onConfirm={() => console.log("Delete college:", college.collegeCode)}
+                    />
+                </>
             )
         },
     },
