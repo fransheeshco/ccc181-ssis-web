@@ -41,14 +41,6 @@ export function AppSidebar() {
             <SidebarMenu className="mt-2 space-y-1">
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="/colleges" className="flex items-center gap-3 px-4 py-2">
-                    <School className="h-6 w-6" />
-                    <span className="text-lg font-semibold">College</span>
-                  </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
                   <a href="/students" className="flex items-center gap-3 px-4 py-2">
                     <Users className="h-6 w-6" />
                     <span className="text-lg font-semibold">Students</span>
@@ -60,6 +52,14 @@ export function AppSidebar() {
                   <a href="/programs" className="flex items-center gap-3 px-4 py-2">
                     <BookOpen className="h-6 w-6" />
                     <span className="text-lg font-semibold">Program</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <a href="/colleges" className="flex items-center gap-3 px-4 py-2">
+                    <School className="h-6 w-6" />
+                    <span className="text-lg font-semibold">College</span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
