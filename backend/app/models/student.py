@@ -10,11 +10,21 @@ def get_all_students_model():
 def create_student_model(student_id, first_name, last_name, year_level, gender, program_code):
     with db.get_cursor(commit=True) as cur:
         cur.execute(
-            """INSERT INTO students (student_id, first_name, last_name, year_level, gender, program_code) 
-            VALUES (%s, %s, %s, %s, %s, %s )""",
+            """
+            INSERT INTO students (student_id, first_name, last_name, year_level, gender, program_code) 
+            VALUES (%s, %s, %s, %s, %s, %s)
+            RETURNING student_id, first_name, last_name, year_level, gender, program_code
+            """,
             (student_id, first_name, last_name, year_level, gender, program_code)
         )
-        return cur.fetchone()
+        return {
+            "student_id": student_id,
+            "first_name": first_name, 
+            "last_name": last_name,
+            "year_level": year_level,
+            "gender": gender,
+            "program_code": program_code
+        }
 
 def update_student_model(current_student_id, new_student_id, new_first_name, new_last_name, new_year_level, new_gender, new_program_code):
     with db.get_cursor(commit=True) as cur:
@@ -30,7 +40,14 @@ def update_student_model(current_student_id, new_student_id, new_first_name, new
              RETURNING *;""",
             (new_student_id, new_first_name, new_last_name, new_year_level, new_gender, new_program_code, current_student_id)
         )
-        return cur.fetchone()
+        return {
+            "student_id": new_student_id,
+            "first_name": new_first_name,
+            "last_name": new_last_name,
+            "year_level": new_year_level,
+            "gender": new_gender,
+            "program_code": new_program_code
+        }
 
 def delete_student_model(student_id):
     with db.get_cursor(commit=True) as cur:

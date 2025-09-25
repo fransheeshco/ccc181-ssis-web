@@ -1,8 +1,10 @@
 from app.models.college import (add_college_model, get_colleges_model, update_college_model, delete_college_model)
 
 def create_college_controller(college_code, college_name):
-    add_college_model(college_code=college_code, college_name=college_name)
-    return {"message": "✅ College added successfully"}
+    new_college = add_college_model(college_code=college_code, college_name=college_name)
+    if not new_college:
+        return {"message": "❌ College already exists"}, 400
+    return {"message": "✅ College added successfully"}, 200
 
 def fetch_college_controller():
     return get_colleges_model()

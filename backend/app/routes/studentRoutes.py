@@ -4,15 +4,27 @@ from app.controllers.student import (
     create_student_controller, fetch_students_controller,
     update_student_controller, delete_student_controller
 )
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
 
 student_bp = Blueprint('students', __name__, url_prefix='/students')
 
 @student_bp.route('/', methods=['GET'])
+@jwt_required()
 def fetch_students():
+    valid_user = get_jwt_identity()
+    if valid_user is None:
+        return jsonify({"message": "❌ Unauthorized"}), 401
+    
     return jsonify(fetch_students_controller())
 
 @student_bp.route('/create', methods=['POST'])
+@jwt_required()
 def create_student():
+    valid_user = get_jwt_identity()
+    if valid_user is None:
+        return jsonify({"message": "❌ Unauthorized"}), 401
+    
     data = request.get_json()
 
     student_id = data.get("student_id")
@@ -24,8 +36,14 @@ def create_student():
     
     return jsonify(create_student_controller(student_id, first_name, last_name, year_level, gender, program_code))
 
+
 @student_bp.route('/update/<string:student_id>', methods=['PUT'])
+@jwt_required()
 def update_student(student_id):
+    valid_user = get_jwt_identity()
+    if valid_user is None:
+        return jsonify({"message": "❌ Unauthorized"}), 401
+    
     data = request.get_json()
 
     new_student_id = data.get("student_id")
@@ -46,5 +64,10 @@ def update_student(student_id):
     return jsonify(updated)
 
 @student_bp.route('/delete/<string:student_id>', methods=['DELETE'])
+@jwt_required()
 def delete_student(student_id):
+    valid_user = get_jwt_identity()
+    if valid_user is None:
+        return jsonify({"message": "❌ Unauthorized"}), 401
+    
     return jsonify(delete_student_controller(student_id))

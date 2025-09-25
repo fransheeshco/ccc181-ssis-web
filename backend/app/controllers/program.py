@@ -1,22 +1,36 @@
 from app.models.program import (add_programs_model, get_all_programs_model, update_programs_model, delete_programs_model)
 
 def create_program_controller(program_code, program_name, college_code):
-    add_programs_model(program_code=program_code, program_name=program_name, college_code=college_code)
-    return {"message": "✅ Program added successfully"}
+    try:
+        new_program = add_programs_model(program_code, program_name, college_code)
+        if not new_program:
+            return {"message": "❌ Program already exists"}, 400
+        return {"message": "✅ Program created successfully", "program": new_program}, 201
+    except Exception as e:
+        return {"error": f"❌ {str(e)}"}, 400
 
 def fetch_programs_controller():
-    return get_all_programs_model()
+    try:
+        return get_all_programs_model()
+    except Exception as e:
+        return {"error": f"❌ {str(e)}"}, 400
 
 def update_program_controller(current_program_code, new_program_code, new_program_name, new_college_code):
-    rowcount = update_programs_model(current_program_code, new_program_code, new_program_name, new_college_code)
-    if rowcount == 0:
-        return {
-            "error": f"⚠️ Program '{current_program_code}' not found"
-        }
-    return {"message": "✅ Program updated successfully"}
+    try: 
+        rowcount = update_programs_model(current_program_code, new_program_code, new_program_name, new_college_code)
+        if rowcount == 0:
+            return {
+                "error": f"⚠️ Program '{current_program_code}' not found"
+            }
+        return {"message": "✅ Program updated successfully"}
+    except Exception as e:
+        return {"error": f"❌ {str(e)}"}, 400
 
 def delete_program_controller(program_code):
-    rowcount = delete_programs_model(program_code) 
-    if rowcount == 0:
-        return {"error": f"⚠️ Program '{program_code}' not found"}
+    try:
+        rowcount = delete_programs_model(program_code)
+        if rowcount == 0:
+            return {"error": f"⚠️ Program '{program_code}' not found"}
+    except Exception as e:
+        return {"error": f"❌ {str(e)}"}, 400
     return {"message": "✅ Program deleted successfully"}
