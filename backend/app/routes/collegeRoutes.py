@@ -4,7 +4,7 @@ from app.controllers.college import (fetch_college_controller, update_college_co
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 
-college_bp = Blueprint('colleges', __name__, url_prefix='/colleges')
+college_bp = Blueprint('colleges', __name__, url_prefix='/api/colleges')
 
 @college_bp.route('/', methods=['GET'])
 @jwt_required()

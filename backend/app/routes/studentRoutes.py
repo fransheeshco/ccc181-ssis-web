@@ -7,7 +7,7 @@ from app.controllers.student import (
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 
-student_bp = Blueprint('students', __name__, url_prefix='/students')
+student_bp = Blueprint('students', __name__, url_prefix='/api/students')
 
 @student_bp.route('/', methods=['GET'])
 @jwt_required()

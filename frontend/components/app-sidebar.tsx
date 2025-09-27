@@ -1,3 +1,6 @@
+"use client";
+
+import { useAuth } from "@/app/context/authContext";
 import {
   Sidebar,
   SidebarContent,
@@ -9,12 +12,20 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarTrigger
-} from "@/components/ui/sidebar"
-import { BookOpen, Users, Settings, School } from "lucide-react"
-import Image from "next/image"
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { BookOpen, Users, Settings, School } from "lucide-react";
+import Image from "next/image";
 
 export function AppSidebar() {
+  const { isAuthenticated, loading } = useAuth();
+
+  // Show nothing while loading session
+  if (loading) return null;
+
+  // Hide sidebar if not authenticated
+  if (!isAuthenticated) return null;
+
   return (
     <Sidebar>
       {/* ✅ Header with logo + title */}
@@ -27,9 +38,7 @@ export function AppSidebar() {
             height={40}
             className="rounded"
           />
-          <span className="text-2xl font-extrabold text-white">
-            Oracle
-          </span>
+          <span className="text-2xl font-extrabold text-white">Oracle</span>
         </div>
       </SidebarHeader>
 
@@ -41,25 +50,36 @@ export function AppSidebar() {
             <SidebarMenu className="mt-2 space-y-1">
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="/students" className="flex items-center gap-3 px-4 py-2">
+                  <a
+                    href="/colleges"
+                    className="flex items-center gap-3 px-4 py-2"
+                  >
+                    <School className="h-6 w-6" />
+                    <span className="text-lg font-semibold">College</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <a
+                    href="/students"
+                    className="flex items-center gap-3 px-4 py-2"
+                  >
                     <Users className="h-6 w-6" />
                     <span className="text-lg font-semibold">Students</span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="/programs" className="flex items-center gap-3 px-4 py-2">
+                  <a
+                    href="/programs"
+                    className="flex items-center gap-3 px-4 py-2"
+                  >
                     <BookOpen className="h-6 w-6" />
                     <span className="text-lg font-semibold">Program</span>
-                  </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <a href="/colleges" className="flex items-center gap-3 px-4 py-2">
-                    <School className="h-6 w-6" />
-                    <span className="text-lg font-semibold">College</span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -82,5 +102,5 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

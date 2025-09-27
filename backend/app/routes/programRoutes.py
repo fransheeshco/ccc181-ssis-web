@@ -4,7 +4,7 @@ from app.controllers.program import (create_program_controller, delete_program_c
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 
-program_bp = Blueprint('programs', __name__, url_prefix='/programs')
+program_bp = Blueprint('programs', __name__, url_prefix='/api/programs')
 
 @program_bp.route('/', methods=['GET'])
 @jwt_required()
