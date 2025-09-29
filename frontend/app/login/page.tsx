@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LogIn } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -24,18 +25,18 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       await login(email, password);
-      router.push("/dashboard");
+      router.push("/settings");
     } catch (err) {
       console.error(err);
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-50">
+    <div className="flex justify-center items-center h-screen">
       <Card className="w-[400px]">
-        <CardHeader>
-          <CardTitle>Login</CardTitle>
-          <CardDescription>Enter your credentials to access your account.</CardDescription>
+        <CardHeader className="flex items-center gap-2">
+          <LogIn className="h-6 w-6 text-blue-600" />
+          <CardTitle className="text-xl font-semibold">Login</CardTitle>
         </CardHeader>
         <CardContent>
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
@@ -65,6 +66,9 @@ export default function LoginPage() {
               {loading ? "Logging in..." : "Login"}
             </Button>
           </form>
+          <p className="mt-4 text-sm text-center text-gray-600">
+            Don’t have an account? <a href="/register" className="text-blue-600 hover:underline">Register</a>
+          </p>
         </CardContent>
       </Card>
     </div>

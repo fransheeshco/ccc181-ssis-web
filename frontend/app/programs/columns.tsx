@@ -5,28 +5,21 @@ import { Delete, MoreHorizontal } from "lucide-react"
 import { ArrowUpDown } from "lucide-react"
 import { EditProgramDialog } from "@/components/forms/EditProgramDialog"
 import { DeleteDialog } from "@/components/forms/DeleteDialog"
+import * as z from "zod"
 
 import { Button } from "@/components/ui/button"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
-import { Checkbox } from "@/components/ui/checkbox"
+const ProgramSchema = z.object({
+    program_name: z.string().min(1, "Program name is required"),
+    program_code: z.string().min(1, "Program code is required"),
+    college_code: z.string().min(1, "College code is required"),
+})
 
-export type Program = {
-    programName: string
-    programCode: string
-    collegeCode: string
-}
+export type Program = z.infer<typeof ProgramSchema>;
 
 export const columns: ColumnDef<Program>[] = [
     {
-        accessorKey: "programCode",
+        accessorKey: "program_code",
         header: ({ column }) => {
             return (
                 <Button
@@ -43,7 +36,7 @@ export const columns: ColumnDef<Program>[] = [
         }
     },
     {
-        accessorKey: "programName",
+        accessorKey: "program_name",
         header: ({ column }) => {
             return (
                 <Button
@@ -60,7 +53,7 @@ export const columns: ColumnDef<Program>[] = [
         }
     },
     {
-        accessorKey: "collegeCode",
+        accessorKey: "college_code",
         header: ({ column }) => {
             return (
                 <Button
@@ -86,8 +79,8 @@ export const columns: ColumnDef<Program>[] = [
                 <>
                     <EditProgramDialog program={program} />
                     <DeleteDialog
-                        itemName={program.programCode + ": " + program.programName}
-                        onConfirm={() => console.log("Delete program:", program.programCode)}
+                        itemName={program.program_code + ": " + program.program_name}
+                        onConfirm={() => console.log("Delete program:", program.program_code)}
                     />
                 </>
             )

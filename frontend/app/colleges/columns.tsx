@@ -5,23 +5,16 @@ import { MoreHorizontal } from "lucide-react"
 import { ArrowUpDown } from "lucide-react"
 import { EditCollegeDialogue } from "@/components/forms/EditCollegeDialog"
 import { DeleteDialog } from "@/components/forms/DeleteDialog"
+import * as z from "zod"
 
 import { Button } from "@/components/ui/button"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
-import { Checkbox } from "@/components/ui/checkbox"
+export const collegeSchema = z.object({
+    collegeCode: z.string().min(1, "College code is required"),
+    collegeName: z.string().min(1, "College name is required"),
+})
 
-export type College = {
-    collegeCode: string
-    collegeName: string
-}
+export type College = z.infer<typeof collegeSchema>;
 
 export const columns: ColumnDef<College>[] = [
     {

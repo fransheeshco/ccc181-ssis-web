@@ -32,9 +32,9 @@ import { Edit } from "lucide-react"
 
 
 const formSchema = z.object({
-  programCode: z.string().min(1),
-  programName: z.string().min(1),
-  collegeCode: z.string().min(1),
+  program_code: z.string().min(1),
+  program_name: z.string().min(1),
+  college_code: z.string().min(1),
 })
 
 type Program = z.infer<typeof formSchema>
@@ -43,9 +43,9 @@ export function EditProgramDialog({ program }: { program: Program }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      programCode: "BSCS",
-      programName: "Bachelors of Science in Computer Science",
-      collegeCode: "CCS"
+      program_code: "BSCS",
+      program_name: "Bachelors of Science in Computer Science",
+      college_code: "CCS"
     },
   })
 
@@ -54,9 +54,9 @@ export function EditProgramDialog({ program }: { program: Program }) {
   useEffect(() => {
     if (program) {
       form.reset({
-        collegeCode: program.collegeCode,
-        programName: program.programName,
-        programCode: program.programCode
+        college_code: program.college_code,
+        program_name: program.program_name,
+        program_code: program.program_code
       })
     }
   }, [program, form])
@@ -85,7 +85,7 @@ export function EditProgramDialog({ program }: { program: Program }) {
           >
             <FormField
               control={form.control}
-              name="programCode"
+              name="program_code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Program Code</FormLabel>
@@ -99,7 +99,7 @@ export function EditProgramDialog({ program }: { program: Program }) {
 
             <FormField
               control={form.control}
-              name="programName"
+              name="program_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Program Name</FormLabel>
@@ -113,7 +113,7 @@ export function EditProgramDialog({ program }: { program: Program }) {
 
             <FormField
               control={form.control}
-              name="collegeCode"
+              name="college_code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>College Code</FormLabel>

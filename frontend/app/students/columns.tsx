@@ -5,27 +5,28 @@ import { Edit, MoreHorizontal } from "lucide-react"
 import { ArrowUpDown } from "lucide-react"
 import { EditStudentDialog } from "@/components/forms/EditStudentDialog"
 import { DeleteDialog } from "@/components/forms/DeleteDialog"
+import * as z from 'zod'
 
 import { Button } from "@/components/ui/button"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
-export type Student = {
-    idNumber: string
-    firstName: string
-    lastName: string
-    gender: string
-    program: string
-    yearLevel: number
-}
+type StudentID = `${number}${number}${number}${number}-${number}${number}${number}${number}`;
+
+export const studentSchema = z.object(
+    {
+        student_id: z.string().regex(/^\d{4}-\d{4}$/, "ID must be in YYYY-NNNN format"),
+        first_name: z.string().min(1),
+        last_name: z.string().min(1),
+        program: z.string(),
+        year_level: z.number(),
+        gender: z.string(),
+    }
+);
+
+export type Student = z.infer<typeof studentSchema>;
 
 export const columns: ColumnDef<Student>[] = [
     {
-        accessorKey: "idNumber",
+        accessorKey: "student_id",
         header: ({ column }) => {
             return (
                 <Button
@@ -42,7 +43,7 @@ export const columns: ColumnDef<Student>[] = [
         }
     },
     {
-        accessorKey: "firstName",
+        accessorKey: "first_name",
         header: ({ column }) => {
             return (
                 <Button
@@ -59,7 +60,7 @@ export const columns: ColumnDef<Student>[] = [
         }
     },
     {
-        accessorKey: "lastName",
+        accessorKey: "last_name",
         header: ({ column }) => {
             return (
                 <Button
@@ -93,7 +94,7 @@ export const columns: ColumnDef<Student>[] = [
         }
     },
     {
-        accessorKey: "yearLevel",
+        accessorKey: "year_level",
         header: ({ column }) => {
             return (
                 <Button
@@ -136,8 +137,8 @@ export const columns: ColumnDef<Student>[] = [
                 <>
                     <EditStudentDialog student={student} />
                     <DeleteDialog
-                        itemName={student.idNumber + ": " + student.lastName}
-                        onConfirm={() => console.log("Delete Student:", student.idNumber)}
+                        itemName={student.student_id + ": " + student.last_name}
+                        onConfirm={() => console.log("Delete Student:", student.student_id)}
                     />
                 </>
             )

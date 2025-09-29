@@ -1,10 +1,19 @@
-import { SettingsForm } from "@/components/forms/SettingsForm"
+import { SettingsCard } from "@/components/ui/settings-card"
+// Example: fetch current user on the server
+// Replace with your actual data fetching logic
+async function getCurrentUser() {
+  return {
+    name: "Francis Cejas",
+    email: "francis@example.com",
+  }
+}
 
-export default function page() {
+export default async function SettingsPage() {
+  const user = await getCurrentUser()
+
   return (
-    <main className="max-w-2xl mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold mb-6">Settings</h1>
-      <SettingsForm />
-    </main>
+    <div className="container max-w-2xl py-8 mx-auto">
+      <SettingsCard user={user} />
+    </div>
   )
 }

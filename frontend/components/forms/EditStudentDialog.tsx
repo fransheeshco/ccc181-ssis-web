@@ -30,11 +30,11 @@ import { Edit } from "lucide-react"
 
 
 const formSchema = z.object({
-  idNumber: z.string().min(1),
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
+  student_id: z.string().min(1),
+  first_name: z.string().min(1),
+  last_name: z.string().min(1),
   program: z.string().min(1),
-  yearLevel: z.number().int(),
+  year_level: z.number().int(),
   gender: z.string().min(1),
 })
 
@@ -45,11 +45,11 @@ export function EditStudentDialog({ student }: { student: Student }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      idNumber: "",
-      firstName: "John",
-      lastName: "Doe",
+      student_id: "",
+      first_name: "John",
+      last_name: "Doe",
       program: "College",
-      yearLevel: 1,
+      year_level: 1,
       gender: "Male",
     },
   })
@@ -85,7 +85,7 @@ return (
           >
             <FormField
               control={form.control}
-              name="idNumber"
+              name="student_id"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>ID Number</FormLabel>
@@ -99,7 +99,7 @@ return (
 
             <FormField
               control={form.control}
-              name="firstName"
+              name="first_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>First Name</FormLabel>
@@ -113,7 +113,7 @@ return (
 
             <FormField
               control={form.control}
-              name="lastName"
+              name="last_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>
@@ -141,7 +141,7 @@ return (
 
             <FormField
               control={form.control}
-              name="yearLevel"
+              name="year_level"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Year</FormLabel>

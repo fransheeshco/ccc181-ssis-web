@@ -1,59 +1,23 @@
 import { columns, Student } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
 import { AddStudentDialog } from "@/components/forms/AddStudentDialogue"
+import { cookies } from "next/headers"
 
 async function getData(): Promise<Student[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      idNumber: "728ed52f",
-      firstName: "Francis",
-      lastName: "Cejas",
-      program: "BSCS",
-      gender: "Male",
-      yearLevel: 2
+  const cookieStore = await cookies();            // get cookies from incoming request
+  const cookieHeader = await cookieStore.toString(); // format as "key=value; key2=value2"
+
+  const response = await fetch("http://localhost:8000/api/students/", {
+    cache: "no-store",
+    headers: {  
+      "Content-Type": "application/json",
+      "Cookie": cookieHeader, // forward cookies to Flask
     },
-    {
-      idNumber: "728ed52f",
-      firstName: "Francis",
-      lastName: "Cejas",
-      program: "BSCS",
-      gender: "Male",
-      yearLevel: 2
-    },
-    {
-      idNumber: "728ed52f",
-      firstName: "Francis",
-      lastName: "Cejas",
-      program: "BSCS",
-      gender: "Male",
-      yearLevel: 2
-    },
-    {
-      idNumber: "728ed52f",
-      firstName: "Francis",
-      lastName: "Cejas",
-      program: "BSCS",
-      gender: "Male",
-      yearLevel: 2
-    },
-    {
-      idNumber: "728ed52f",
-      firstName: "Francis",
-      lastName: "Cejas",
-      program: "BSCS",
-      gender: "Male",
-      yearLevel: 2
-    },
-    {
-      idNumber: "728ed52f",
-      firstName: "Francis",
-      lastName: "Cejas",
-      program: "BSCS",
-      gender: "Male",
-      yearLevel: 2
-    },
-  ]
+  });
+
+  const data = await response.json()
+  console.log(data)
+  return data
 }
 
 export default async function DemoPage() {
