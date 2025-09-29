@@ -5,12 +5,12 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { Edit } from "lucide-react"
 import { z } from "zod"
+import { useCollegeContext } from "@/app/context/collegeContext"
 
 import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -28,49 +28,57 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 
-
 const formSchema = z.object({
-    collegeCode: z.string().min(1),
-    collegeName: z.string().min(1)
+    new_college_code: z.string().min(1, "College code is required"),
+    new_college_name: z.string().min(1, "College name is required"),
 })
 
-type College = z.infer<typeof formSchema>
+type FormValues = z.infer<typeof formSchema>
 
-export function EditCollegeDialogue({ college }: {college: College}) {
-    const form = useForm<z.infer<typeof formSchema>>({
+export function EditCollegeDialogue({ college }: { college: { college_code: string, college_name: string } }) {
+    const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            collegeCode: "",
-            collegeName: "",
+            new_college_code: "",
+            new_college_name: "",
         },
     })
+
     const [open, setOpen] = useState(false)
+    const { updateCollege } = useCollegeContext()
 
     useEffect(() => {
-    if (college) {
-      form.reset({
-        collegeCode: college.collegeCode,
-        collegeName: college.collegeName,
-      })
-    }
-  }, [college, form])
+        if (college) {
+            form.reset({
+                new_college_code: college.college_code,
+                new_college_name: college.college_name,
+            })
+        }
+    }, [college, form])
 
+    async function onSubmit(values: { new_college_code: string; new_college_name: string }) {
+        const updated = await updateCollege({
+            curr_code: college.college_code,
+            college_code: values.new_college_code,
+            college_name: values.new_college_name,
+        })
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
-        setOpen(false)  
+        setOpen(false)
+        console.log(updated) // ✅ should now show the updated college from backend
     }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild className="m-2">
-                <Button><Edit className="h-6 w-6"/></Button>
+                <Button><Edit className="h-6 w-6" /></Button>
             </DialogTrigger>
 
             <DialogContent className="max-w-md">
                 <DialogHeader>
                     <DialogTitle>Edit College</DialogTitle>
-                    <DialogDescription>Fill in the form to edit college information.</DialogDescription>
+                    <DialogDescription>
+                        Editing <strong>{college.college_code}</strong>
+                    </DialogDescription>
                 </DialogHeader>
 
                 <Form {...form}>
@@ -80,12 +88,12 @@ export function EditCollegeDialogue({ college }: {college: College}) {
                     >
                         <FormField
                             control={form.control}
-                            name="collegeCode"
+                            name="new_college_code"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>College Code</FormLabel>
+                                    <FormLabel>New College Code</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Enter College Code" {...field} />
+                                        <Input placeholder="Enter new code" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -94,21 +102,20 @@ export function EditCollegeDialogue({ college }: {college: College}) {
 
                         <FormField
                             control={form.control}
-                            name="collegeName"
+                            name="new_college_name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>College Name</FormLabel>
+                                    <FormLabel>New College Name</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Enter College Name" {...field} />
+                                        <Input placeholder="Enter new name" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
 
-
                         <DialogFooter>
-                            <Button type="submit">Submit</Button>
+                            <Button type="submit">Save Changes</Button>
                         </DialogFooter>
                     </form>
                 </Form>

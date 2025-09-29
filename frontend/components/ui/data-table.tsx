@@ -40,7 +40,6 @@ export function DataTable<TData, TValue>({
   const [rowSelection, setRowSelection] = React.useState({})
   const [sorting, setSorting] = React.useState<SortingState>([])
 
-
   const table = useReactTable({
     data,
     columns,
@@ -48,8 +47,9 @@ export function DataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     getPaginationRowModel: getPaginationRowModel(),
     onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
+    manualSorting: true,      // ✅ sorting handled by server
+    manualPagination: true,   // ✅ pagination handled by server
+    pageCount: -1,            // let server tell you how many pages (or use total count)
     state: {
       columnVisibility,
       rowSelection,

@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import { useState } from "react"
 import { z } from "zod"
 import { Plus } from "lucide-react"
+import { College, useCollegeContext, CollegeProvider } from "@/app/context/collegeContext"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -17,8 +18,8 @@ import {
 } from "@/components/ui/dialog"
 
 const formSchema = z.object({
-  collegeCode: z.string().min(1),
-  collegeName: z.string().min(1),
+  college_code: z.string().min(1),
+  college_name: z.string().min(1),
 })
 
 interface AddCollegeDialogueProps {
@@ -29,15 +30,21 @@ export function AddCollegeDialogue({ label }: AddCollegeDialogueProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      collegeCode: "CCS",
-      collegeName: "College of Computer Studies",
+      college_code: "CCS",
+      college_name: "College of Computer Studies",
     },
   })
   const [open, setOpen] = useState(false)
+  const { addCollege } = useCollegeContext()
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-    setOpen(false)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      await addCollege(values)
+        setOpen(false)
+        form.reset()
+    } catch (error) {
+      console.error("Failed to add college:", error)
+    }
   }
 
   return (
@@ -69,7 +76,7 @@ export function AddCollegeDialogue({ label }: AddCollegeDialogueProps) {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="collegeCode"
+              name="college_code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>College Code</FormLabel>
@@ -82,7 +89,7 @@ export function AddCollegeDialogue({ label }: AddCollegeDialogueProps) {
             />
             <FormField
               control={form.control}
-              name="collegeName"
+              name="college_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>College Name</FormLabel>

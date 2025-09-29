@@ -5,20 +5,21 @@ import { MoreHorizontal } from "lucide-react"
 import { ArrowUpDown } from "lucide-react"
 import { EditCollegeDialogue } from "@/components/forms/EditCollegeDialog"
 import { DeleteDialog } from "@/components/forms/DeleteDialog"
+import { useCollegeContext } from "../context/collegeContext"
 import * as z from "zod"
 
 import { Button } from "@/components/ui/button"
 
 export const collegeSchema = z.object({
-    collegeCode: z.string().min(1, "College code is required"),
-    collegeName: z.string().min(1, "College name is required"),
+    college_code: z.string().min(1, "College code is required"),
+    college_name: z.string().min(1, "College name is required"),
 })
 
 export type College = z.infer<typeof collegeSchema>;
 
 export const columns: ColumnDef<College>[] = [
     {
-        accessorKey: "collegeCode",
+        accessorKey: "college_code",
         header: ({ column }) => {
             return (
                 <Button
@@ -35,7 +36,7 @@ export const columns: ColumnDef<College>[] = [
         }
     },
     {
-        accessorKey: "collegeName",
+        accessorKey: "college_name",
         header: ({ column }) => {
             return (
                 <Button
@@ -54,14 +55,15 @@ export const columns: ColumnDef<College>[] = [
         id: "actions",
         header: "Actions",
         cell: ({ row }) => {
+            const { deleteCollege } = useCollegeContext()
             const college = row.original
 
             return (
                 <>
                     <EditCollegeDialogue college={college} />
                     <DeleteDialog
-                        itemName={college.collegeCode + ": " + college.collegeName}
-                        onConfirm={() => console.log("Delete college:", college.collegeCode)}
+                        itemName={college.college_code + ": " + college.college_name}
+                        onConfirm={() => deleteCollege(college.college_code)}
                     />
                 </>
             )
