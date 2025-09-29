@@ -38,9 +38,9 @@ def login_user_controller(email, password):
     })
 
     # Step 3: attach cookies
-    set_access_cookies(resp, access_token,)
-    set_refresh_cookies(resp, refresh_token)
-
+    set_access_cookies(resp, access_token, max_age=15*60)  # 15 minutes
+    set_refresh_cookies(resp, refresh_token, max_age=7*24*60*60)  # 7 days
+    print(resp)
     return resp, 200
 
 
@@ -53,7 +53,8 @@ def refresh_token_controller():
             "user_id": current_user,  # if you store more info, expand this
         }
     })
-    set_access_cookies(resp, new_access_token)
+    set_access_cookies(resp, new_access_token, max_age=15*60)  # 15 minutes
+    print(resp)
     return resp, 200
 
 def logout_user_controller():

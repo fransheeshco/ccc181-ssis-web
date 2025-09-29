@@ -15,8 +15,19 @@ def fetch_students():
     valid_user = get_jwt_identity()
     if valid_user is None:
         return jsonify({"message": "❌ Unauthorized"}), 401
-    
-    return jsonify(fetch_students_controller())
+    students = fetch_students_controller()
+    formatted = [
+    {
+        "student_id": student_id,
+        "first_name": first_name,
+        "last_name": last_name,
+        "program": program_code,
+        "year_level": year_level,
+        "gender": gender
+    }
+    for student_id, first_name, last_name, year_level, gender, program_code in students
+    ]
+    return jsonify(formatted)
 
 @student_bp.route('/create', methods=['POST'])
 @jwt_required()

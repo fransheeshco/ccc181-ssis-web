@@ -12,10 +12,7 @@ def create_app():
     
     CORS(
         app,
-        origins=[
-            "http://127.0.0.1:3000",
-            "http://localhost:3000"
-        ],
+        origins=["http://localhost:3000"],
         supports_credentials=True,
         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     )
@@ -24,12 +21,11 @@ def create_app():
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
     app.config['JWT_COOKIE_CSRF_PROTECT'] = False
-    app.config['JWT_ACCESS_COOKIE_PATH'] = '/api/'
-    app.config["JWT_COOKIE_DOMAIN"] = "localhost"
-    app.config['JWT_REFRESH_COOKIE_PATH'] = '/api/'
-    app.config["JWT_COOKIE_SAMESITE"] = "None"
-    app.config["JWT_COOKIE_SECURE"] = False   # browsers require HTTPS if SameSite=None
-    app.config["JWT_COOKIE_SAMESITE"] = "Lax"
+    app.config['JWT_DOMAIN'] = 'localhost'
+    app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
+    app.config['JWT_SAMESITE'] = 'Lax'
+    app.config['JWT_REFRESH_COOKIE_PATH'] = '/'
+    app.config["JWT_COOKIE_SECURE"] = False
 
 
     jwt = JWTManager(app)

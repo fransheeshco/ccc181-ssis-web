@@ -9,8 +9,7 @@ import psycopg2
 
 def fetch_students_controller():
     try:
-        students = get_all_students_model()
-        return {"students": students}, 200
+        return get_all_students_model()
     except psycopg2.Error as e:
         return {"error": f"Database error: {e}"}, 500
 

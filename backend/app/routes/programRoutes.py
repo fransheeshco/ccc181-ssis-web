@@ -12,8 +12,16 @@ def fetch_programs():
     valid_user = get_jwt_identity()
     if valid_user is None:
         return jsonify({"message": "❌ Unauthorized"}), 401
-    
-    return jsonify(fetch_programs_controller())
+    programs = fetch_programs_controller()
+    formatted = [
+        {
+            "program_code": program_code, "program_name": program_name, 
+            "college_code": college_code
+         } 
+        for program_code, program_name, college_code in programs
+    ]
+    return jsonify(formatted)
+
 
 @program_bp.route('/create', methods=['POST'])
 @jwt_required()

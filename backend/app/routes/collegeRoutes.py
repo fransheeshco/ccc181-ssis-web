@@ -12,7 +12,9 @@ def fetch_colleges():
     valid_user = get_jwt_identity()
     if valid_user is None:
         return jsonify({"message": "❌ Unauthorized"}), 401
-    return jsonify(fetch_college_controller())
+    colleges = fetch_college_controller()
+    formatted = [{"collegeCode": code, "collegeName": name} for code, name in colleges]
+    return jsonify(formatted)
 
 @college_bp.route('/create', methods=['POST'])
 @jwt_required()
