@@ -6,15 +6,23 @@ from flask_jwt_extended import jwt_required
 
 college_bp = Blueprint('colleges', __name__, url_prefix='/api/colleges')
 
-@college_bp.route('/', methods=['GET'])
+@college_bp.route("/", methods=["GET"])
 @jwt_required()
-def fetch_colleges():
+def fetch_colleges_route():
     valid_user = get_jwt_identity()
     if valid_user is None:
         return jsonify({"message": "❌ Unauthorized"}), 401
-    colleges = fetch_college_controller()
-    formatted = [{"collegeCode": code, "collegeName": name} for code, name in colleges]
-    return jsonify(formatted)
+
+    # ✅ Extract query params from URL
+    limit = request.args.get("limit", default=10, type=int)
+    offset = request.args.get("offset", default=0, type=int)
+    search = request.args.get("search", default=None, type=str)
+    sort_by = request.args.get("sort_by", default="college_code", type=str)
+    order = request.args.get("order", default="ASC", type=str)
+
+    colleges = fetch_college_controller(limit, offset, search, sort_by, order)
+    return jsonify(colleges)
+
 
 @college_bp.route('/create', methods=['POST'])
 @jwt_required()
@@ -39,7 +47,7 @@ def update_college_route(college_code):
     data = request.get_json()
     new_code = data.get("college_code")     
     new_name = data.get("college_name")
-    return jsonify(update_college_controller(college_code, new_code, new_name))
+    return jsonify(update_college_controller(new_code, new_name, college_code))
 
 @college_bp.route('/delete/<string:college_code>', methods=['DELETE'])
 @jwt_required()

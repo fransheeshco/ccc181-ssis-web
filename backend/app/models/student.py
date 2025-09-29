@@ -1,12 +1,22 @@
 from app.db import db
 
-def get_all_students_model():
+def get_all_students_model(limit=10, offset=0, search=None, sort_by="student_id", order="ASC"):
     with db.get_cursor() as cur:
-        cur.execute(
-            "SELECT * FROM students;"
-        )
-        return cur.fetchall()
-    
+        basequery = "SELECT * FROM students"
+        params = []
+
+        if search:
+            basequery += " WHERE student_id::text ILIKE %s OR first_name ILIKE %s OR last_name ILIKE %s OR program_code ILIKE %s OR gender ILIKE %s OR year_level::text"
+            search_param = f"%{search}%"
+            params.extend([search_param, search_param, search_param, search_param])
+            params.append(search_param)
+
+        basequery += f" ORDER BY {sort_by} {order} LIMIT %s OFFSET %s"
+        params.extend([limit, offset])
+        cur.execute(basequery, tuple(params))
+        results = cur.fetchall()
+        return results
+
 def create_student_model(student_id, first_name, last_name, year_level, gender, program_code):
     with db.get_cursor(commit=True) as cur:
         cur.execute(

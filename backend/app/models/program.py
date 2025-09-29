@@ -1,11 +1,20 @@
 from app.db import db
 
-def get_all_programs_model():
+def get_all_programs_model(limit=10, offset=0, search=None, sort_by="program_code", order="ASC"):
     with db.get_cursor() as cur:
-        cur.execute(
-            "SELECT * FROM programs;"
-        )
-        return cur.fetchall()
+        basequery = "SELECT * FROM programs"
+        params = []
+
+        if search:
+            basequery += " WHERE program_code ILIKE %s OR program_name ILIKE %s OR college_code ILIKE %s"
+            search_param = f"%{search}%"
+            params.extend([search_param, search_param, search_param])
+
+        basequery += f" ORDER BY {sort_by} {order} LIMIT %s OFFSET %s"
+        params.extend([limit, offset])
+        cur.execute(basequery, tuple(params))
+        results = cur.fetchall()
+        return results
     
 def add_programs_model(program_code, program_name, college_code):
     with db.get_cursor(commit=True) as cur:
