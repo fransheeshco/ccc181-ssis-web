@@ -1,7 +1,7 @@
 "use client";
 
 import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/app/context/authContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -25,9 +25,16 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen">
+      <div className="flex h-screen w-full">
         <AppSidebar />
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        <main className="flex-1 overflow-y-auto relative bg-gray-50">
+          {/* ✅ Sidebar Toggle Button */}
+          <div className="absolute top-4 left-4 z-50">
+            <SidebarTrigger />
+          </div>
+
+          <div className="p-6">{children}</div>
+        </main>
       </div>
     </SidebarProvider>
   );

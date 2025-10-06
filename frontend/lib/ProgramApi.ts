@@ -1,4 +1,4 @@
-import { College, fetchCollegeReponse, collegeFilters, updateCollegePayload, deleteCollegePayload } from "@/lib/types/collegeTypes"
+import { Program, ProgramsData, programFilters, updateProgramPayload, deleteProgramPayload, fetchProgramReponse } from "@/lib/types/programTypes"
 import axiosInstance from "./axios";
 
 async function handleReponse(res: Response) {
@@ -9,7 +9,7 @@ async function handleReponse(res: Response) {
     return res.json()   
 }
 
-export async function fetchColleges(filters: collegeFilters = {}) {
+export async function fetchProgram(filters: programFilters = {}) {
   const params: Record<string, string> = {};
 
   if (filters.search) params.search = filters.search;
@@ -19,7 +19,7 @@ export async function fetchColleges(filters: collegeFilters = {}) {
   if (filters.limit !== undefined) params.limit = filters.limit.toString();
 
   try {
-    const res = await axiosInstance.get<fetchCollegeReponse>("/colleges/", { params });
+    const res = await axiosInstance.get<fetchProgramReponse>("/programs/", { params });
 
     console.log(res)
     return res.data;
@@ -29,13 +29,14 @@ export async function fetchColleges(filters: collegeFilters = {}) {
   }
 }
 
-export async function createCollege(data: College) {
-  const { college_code, college_name } = data;
+export async function createProgram(data: Program) {
+  const { program_code, program_name, college_code } = data;
 
   try {
-    const res = await axiosInstance.post<College>("/colleges/create", {
-      college_code,
-      college_name,
+    const res = await axiosInstance.post<Program>("/programs/create", {
+        program_code,
+        program_name,
+        college_code,
     });
 
     return res.data; // new college returned from API
@@ -45,13 +46,12 @@ export async function createCollege(data: College) {
   }
 }
 
-export async function updateCollege(data: updateCollegePayload) {
-  const { college_code, college_name, curr_code } = data
+export async function updateCollege(data: updateProgramPayload) {
+  const { program_code, program_name, college_code, curr_code } = data
 
   try {
-    const res = await axiosInstance.put<updateCollegePayload>(`/colleges/update/${curr_code}`, {
-      college_code,
-      college_name
+    const res = await axiosInstance.put<updateProgramPayload>(`/programs/update/${curr_code}`, {
+      program_code, program_name, college_code, curr_code
     })
   } catch (err: any) {
     console.error("API request failed:", err.response?.data || err.message);
@@ -59,10 +59,10 @@ export async function updateCollege(data: updateCollegePayload) {
   }
 }
 
-export async function deleteCollege(data: deleteCollegePayload) {
-  const { college_code} = data
+export async function deleteCollege(data: deleteProgramPayload) {
+  const { program_code } = data
   try {
-    const res = await axiosInstance.delete<deleteCollegePayload>(`/colleges/delete/${college_code}`)
+    const res = await axiosInstance.delete<deleteProgramPayload>(`/programs/delete/${program_code}`)
   } catch (err: any) {
     console.error("API request failed:", err.response?.data || err.message);
     throw new Error(err.response?.data?.msg || "API request failed");
