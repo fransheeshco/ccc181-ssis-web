@@ -15,13 +15,14 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
   DialogFooter, DialogTrigger
 } from "@/components/ui/dialog"
+import { createStudent } from "@/lib/StudentApi"
 
 const formSchema = z.object({
-  idNumber: z.string().min(1),
-  firstname: z.string().min(1),
-  lastName: z.string().min(1),
-  program: z.string().min(1),
-  year: z.number().int(),
+  student_id: z.string().min(1),
+  first_name: z.string().min(1),
+  last_name: z.string().min(1),
+  program_code: z.string().min(1),
+  year_level: z.string().min(1),
   gender: z.string().min(1),
 })
 
@@ -33,19 +34,23 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      idNumber: "",
-      firstname: "John",
-      lastName: "Doe",
-      program: "College",
-      year: 1,
+      student_id: "",
+      first_name: "John",
+      last_name: "Doe",
+      program_code: "College",
+      year_level: "1",
       gender: "Male",
     },
   })
   const [open, setOpen] = useState(false)
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-    setOpen(false)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      await createStudent(values)
+      setOpen(false)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -78,7 +83,7 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="idNumber"
+              name="student_id"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>ID Number</FormLabel>
@@ -91,7 +96,7 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
             />
             <FormField
               control={form.control}
-              name="firstname"
+              name="first_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>First Name</FormLabel>
@@ -104,7 +109,7 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
             />
             <FormField
               control={form.control}
-              name="lastName"
+              name="last_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>
@@ -117,7 +122,7 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
             />
             <FormField
               control={form.control}
-              name="program"
+              name="program_code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Program</FormLabel>
@@ -130,16 +135,14 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
             />
             <FormField
               control={form.control}
-              name="year"
+              name="year_level"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Year</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
                       placeholder="Enter year level"
                       {...field}
-                      onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
                     />
                   </FormControl>
                   <FormMessage />

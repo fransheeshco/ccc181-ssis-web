@@ -46,12 +46,12 @@ export async function createProgram(data: Program) {
   }
 }
 
-export async function updateCollege(data: updateProgramPayload) {
+export async function updateProgram(data: updateProgramPayload) {
   const { program_code, program_name, college_code, curr_code } = data
 
   try {
     const res = await axiosInstance.put<updateProgramPayload>(`/programs/update/${curr_code}`, {
-      program_code, program_name, college_code, curr_code
+      program_code, program_name, college_code
     })
   } catch (err: any) {
     console.error("API request failed:", err.response?.data || err.message);

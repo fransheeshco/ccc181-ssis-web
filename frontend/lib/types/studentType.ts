@@ -2,9 +2,9 @@ export type Student = {
     student_id: string,
     first_name: string,
     last_name: string,
+    program_code: string,
     year_level: string,
     gender: string,
-    program_code: string
 };
 
 export type StudentsData = {
@@ -13,7 +13,7 @@ export type StudentsData = {
 };
 
 export type fetchStudentReponse = {
-    colleges: StudentsData;
+    students: StudentsData;
     rows: number;
     total: number;
 };
@@ -22,9 +22,9 @@ export type updateStudentPayload = {
     student_id: string,
     first_name: string,
     last_name: string,
+    program_code: string,
     year_level: string,
     gender: string,
-    program_code: string,
     curr_code: string
 }
 

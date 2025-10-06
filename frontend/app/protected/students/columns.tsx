@@ -1,7 +1,6 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { Edit, MoreHorizontal } from "lucide-react"
 import { ArrowUpDown } from "lucide-react"
 import { EditStudentDialog } from "@/components/forms/EditStudentDialog"
 import { DeleteDialog } from "@/components/forms/DeleteDialog"
@@ -16,8 +15,8 @@ export const studentSchema = z.object(
         student_id: z.string().regex(/^\d{4}-\d{4}$/, "ID must be in YYYY-NNNN format"),
         first_name: z.string().min(1),
         last_name: z.string().min(1),
-        program: z.string(),
-        year_level: z.number(),
+        program_code: z.string(),
+        year_level: z.string(),
         gender: z.string(),
     }
 );
@@ -77,7 +76,7 @@ export const columns: ColumnDef<Student>[] = [
         }
     },
     {
-        accessorKey: "program",
+        accessorKey: "program_code",
         header: ({ column }) => {
             return (
                 <Button

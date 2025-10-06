@@ -10,7 +10,7 @@ export type ProgramsData = {
 };
 
 export type fetchProgramReponse = {
-    colleges: ProgramsData;
+    programs: ProgramsData;
     rows: number;
     total: number;
 };

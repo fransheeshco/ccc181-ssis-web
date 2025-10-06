@@ -1,7 +1,6 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { Delete, MoreHorizontal } from "lucide-react"
 import { ArrowUpDown } from "lucide-react"
 import { EditProgramDialog } from "@/components/forms/EditProgramDialog"
 import { DeleteDialog } from "@/components/forms/DeleteDialog"
@@ -26,7 +25,7 @@ export const columns: ColumnDef<Program>[] = [
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Program Name
+                    Program Code
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
@@ -43,7 +42,7 @@ export const columns: ColumnDef<Program>[] = [
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Year Level
+                    Program Name
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )

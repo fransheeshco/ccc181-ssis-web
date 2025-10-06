@@ -27,14 +27,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Edit } from "lucide-react"
-
+import { updateStudentPayload } from "@/lib/types/studentType"
+import { updateStudent } from "@/lib/StudentApi"
 
 const formSchema = z.object({
   student_id: z.string().min(1),
   first_name: z.string().min(1),
   last_name: z.string().min(1),
-  program: z.string().min(1),
-  year_level: z.number().int(),
+  program_code: z.string().min(1),
+  year_level: z.string().min(1),
   gender: z.string().min(1),
 })
 
@@ -48,8 +49,8 @@ export function EditStudentDialog({ student }: { student: Student }) {
       student_id: "",
       first_name: "John",
       last_name: "Doe",
-      program: "College",
-      year_level: 1,
+      program_code: "College",
+      year_level: "1",
       gender: "Male",
     },
   })
@@ -61,9 +62,14 @@ export function EditStudentDialog({ student }: { student: Student }) {
     }
   }, [student, form])
 
-  function onSubmit(values: Student) {
-    console.log("Updating student:", values)
-    setOpen(false)  
+  async function onSubmit(values: Student) {
+    try {
+      await updateStudent({...values, 
+        curr_code: student.student_id
+      })
+    } catch (error) {
+      console.log(error)
+    }
   }
 
 return (
@@ -127,7 +133,7 @@ return (
 
             <FormField
               control={form.control}
-              name="program"
+              name="program_code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Program</FormLabel>

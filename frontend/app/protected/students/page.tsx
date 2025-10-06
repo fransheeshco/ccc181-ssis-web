@@ -1,40 +1,5 @@
-import { columns, Student } from "./columns"
-import { DataTable } from "@/components/ui/data-table"
-import { AddStudentDialog } from "@/components/forms/AddStudentDialogue"
-import { cookies } from "next/headers"
+import StudentClient from "@/app/protected/students/client/studentClient";
 
-async function getData(): Promise<Student[]> {
-  const cookieStore = await cookies();            // get cookies from incoming request
-  const cookieHeader = await cookieStore.toString(); // format as "key=value; key2=value2"
-
-  const response = await fetch("http://localhost:8000/api/students/", {
-    cache: "no-store",
-    headers: {  
-      "Content-Type": "application/json",
-      "Cookie": cookieHeader, // forward cookies to Flask
-    },
-  });
-
-  const data = await response.json()
-  console.log(data)
-  return data
-}
-
-export default async function DemoPage() {
-  const data = await getData()
-
-  return (
-    <div className="container mx-auto">
-      <section className="text-6xl font-bold">Student Management</section>
-
-      <DataTable
-        columns={columns}
-        data={data}
-        toolBarComponent={{
-          Component: AddStudentDialog,
-          props: { label: "Student" }
-        }}
-      />
-    </div>
-  )
+export default function CollegesPage() {
+  return <StudentClient />
 }

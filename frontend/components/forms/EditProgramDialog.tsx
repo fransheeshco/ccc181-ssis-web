@@ -16,8 +16,8 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-
-import { DropdownMenuItem } from "../ui/dropdown-menu"
+import { updateProgramPayload } from "@/lib/types/programTypes"
+import { updateProgram } from "@/lib/ProgramApi"
 
 import {
   Dialog,
@@ -45,7 +45,7 @@ export function EditProgramDialog({ program }: { program: Program }) {
     defaultValues: {
       program_code: "BSCS",
       program_name: "Bachelors of Science in Computer Science",
-      college_code: "CCS"
+      college_code: "CCS",
     },
   })
 
@@ -56,14 +56,17 @@ export function EditProgramDialog({ program }: { program: Program }) {
       form.reset({
         college_code: program.college_code,
         program_name: program.program_name,
-        program_code: program.program_code
+        program_code: program.program_code,
       })
     }
   }, [program, form])
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-    setOpen(false)  
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      await updateProgram({...values, curr_code: program.program_code})
+    } catch (error) {
+      setOpen(false)  
+    }
   }
 
   return (

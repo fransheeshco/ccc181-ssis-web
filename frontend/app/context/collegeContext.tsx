@@ -17,7 +17,6 @@ export function CollegeProvider({ children }: { children: ReactNode }) {
 
   const fetchColleges = async () => {
     const data = await apiFetchColleges()
-    
   }
 
   return (

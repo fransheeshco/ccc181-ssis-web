@@ -9,7 +9,7 @@ async function handleReponse(res: Response) {
     return res.json()
 }
 
-export async function fetchProgram(filters: studentFilters = {}) {
+export async function fetchStudents(filters: studentFilters = {}) {
     const params: Record<string, string> = {};
 
     if (filters.search) params.search = filters.search;
@@ -20,7 +20,6 @@ export async function fetchProgram(filters: studentFilters = {}) {
 
     try {
         const res = await axiosInstance.get<fetchStudentReponse>("/students/", { params });
-
         console.log(res)
         return res.data;
     } catch (err: any) {
@@ -29,22 +28,23 @@ export async function fetchProgram(filters: studentFilters = {}) {
     }
 }
 
-export async function createProgram(data: Student) {
+export async function createStudent(data: Student) {
     const { student_id,
         first_name,
         last_name,
+        program_code,
         year_level,
         gender,
-        program_code, } = data;
+        } = data;
 
     try {
         const res = await axiosInstance.post<Student>("/students/create", {
             student_id,
             first_name,
             last_name,
+            program_code,
             year_level,
             gender,
-            program_code
         });
 
         return res.data; // new college returned from API
@@ -54,13 +54,13 @@ export async function createProgram(data: Student) {
     }
 }
 
-export async function updateCollege(data: updateStudentPayload) {
+export async function updateStudent(data: updateStudentPayload) {
     const { student_id,
             first_name,
             last_name,
+            program_code,
             year_level,
             gender,
-            program_code,
         curr_code } = data
 
     try {
@@ -68,9 +68,9 @@ export async function updateCollege(data: updateStudentPayload) {
             student_id,
             first_name,
             last_name,
+            program_code,
             year_level,
             gender,
-            program_code,
             curr_code
         })
     } catch (err: any) {
@@ -79,7 +79,7 @@ export async function updateCollege(data: updateStudentPayload) {
     }
 }
 
-export async function deleteCollege(data: deleteStudentPayload) {
+export async function deleteStudent(data: deleteStudentPayload) {
     const { student_id } = data
     try {
         const res = await axiosInstance.delete<deleteStudentPayload>(`/students/delete/${student_id}`)

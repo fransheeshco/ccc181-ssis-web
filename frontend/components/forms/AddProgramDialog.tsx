@@ -15,11 +15,12 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
   DialogFooter, DialogTrigger
 } from "@/components/ui/dialog"
+import { createProgram } from "@/lib/ProgramApi"
 
 const formSchema = z.object({
-  programCode: z.string().min(1),
-  programName: z.string().min(1),
-  collegeCode: z.string().min(1),
+  program_code: z.string().min(1),
+  program_name: z.string().min(1),
+  college_code: z.string().min(1),
 })
 
 interface AddProgramDialogProps {
@@ -30,16 +31,21 @@ export function AddProgramDialog({ label }: AddProgramDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      programCode: "BSCS",
-      programName: "Bachelors of Science in Computer Science",
-      collegeCode: "CCS"
+      program_code: "BSCS",
+      program_name: "Bachelors of Science in Computer Science",
+      college_code: "CCS"
     },
   })
   const [open, setOpen] = useState(false)
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-    setOpen(false)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      await createProgram(values)
+      setOpen(false)
+      form.reset()
+    } catch (error) {
+      console.error("Failed to add college:", error)
+    }
   }
 
   return (
@@ -71,7 +77,7 @@ export function AddProgramDialog({ label }: AddProgramDialogProps) {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="programCode"
+              name="program_code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Program Code</FormLabel>
@@ -84,7 +90,7 @@ export function AddProgramDialog({ label }: AddProgramDialogProps) {
             />
             <FormField
               control={form.control}
-              name="programName"
+              name="program_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Program Name</FormLabel>
@@ -97,7 +103,7 @@ export function AddProgramDialog({ label }: AddProgramDialogProps) {
             />
             <FormField
               control={form.control}
-              name="collegeCode"
+              name="college_code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>College Code</FormLabel>
