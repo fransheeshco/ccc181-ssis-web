@@ -9,20 +9,19 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // ⬅️ start as true so we wait for cookie check
 
-  // Fetch user session on mount
   const refreshUser = async () => {
-    setLoading(true);
     try {
       const res = await fetch("http://localhost:8000/api/users/token/refresh", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // include cookies
+        credentials: "include",
       });
 
       if (res.ok) {
         const data = await res.json();
+        console.log("REFRESH RESPONSE DATA:", data);
         setUser(data.user);
       } else {
         setUser(null);
@@ -35,23 +34,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  useEffect(() => {
-    refreshUser();
-  }, []);
-
-  // Placeholder login
   const login = async (email: string, password: string) => {
     setLoading(true);
     try {
       const res = await fetch("http://localhost:8000/api/users/login", {
         method: "POST",
-        credentials: "include", // include cookies
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
       if (res.ok) {
-        await refreshUser();
+        await refreshUser(); // ✅ Only refresh *after* successful login
+        console.log("Refresh response:", res.status, await res.text());
       } else {
         throw new Error("Login failed");
       }
@@ -60,7 +54,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // Placeholder logout
   const logout = async () => {
     setLoading(true);
     try {
@@ -74,8 +67,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.error("Logout failed:", error);
     } finally {
       setLoading(false);
+      window.location.href = "/"; // Redirect to login page
     }
   };
+
+  // ✅ Automatically check cookies when the app loads
+  useEffect(() => {
+    refreshUser();
+  }, []);
 
   return (
     <AuthContext.Provider
@@ -88,7 +87,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         refreshUser,
       }}
     >
-      {children}
+       {!loading && children}
     </AuthContext.Provider>
   );
 };

@@ -25,7 +25,7 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       await login(email, password);
-      router.push("/settings");
+      router.push("/protected/settings");
     } catch (err) {
       console.error(err);
     }

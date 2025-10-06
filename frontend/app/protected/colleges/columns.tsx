@@ -5,7 +5,7 @@ import { MoreHorizontal } from "lucide-react"
 import { ArrowUpDown } from "lucide-react"
 import { EditCollegeDialogue } from "@/components/forms/EditCollegeDialog"
 import { DeleteDialog } from "@/components/forms/DeleteDialog"
-import { useCollegeContext } from "../context/collegeContext"
+import { deleteCollege, updateCollege, fetchColleges } from "@/lib/CollegeApi"
 import * as z from "zod"
 
 import { Button } from "@/components/ui/button"
@@ -24,7 +24,9 @@ export const columns: ColumnDef<College>[] = [
             return (
                 <Button
                     variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
                 >
                     College Code
                     <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -41,7 +43,9 @@ export const columns: ColumnDef<College>[] = [
             return (
                 <Button
                     variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
                 >College Name
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
@@ -55,7 +59,6 @@ export const columns: ColumnDef<College>[] = [
         id: "actions",
         header: "Actions",
         cell: ({ row }) => {
-            const { deleteCollege } = useCollegeContext()
             const college = row.original
 
             return (
@@ -63,7 +66,7 @@ export const columns: ColumnDef<College>[] = [
                     <EditCollegeDialogue college={college} />
                     <DeleteDialog
                         itemName={college.college_code + ": " + college.college_name}
-                        onConfirm={() => deleteCollege(college.college_code)}
+                        onConfirm={() => deleteCollege({ college_code: college.college_code })}
                     />
                 </>
             )

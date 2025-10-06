@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 import { Edit } from "lucide-react"
 import { z } from "zod"
 import { useCollegeContext } from "@/app/context/collegeContext"
+import { updateCollege, fetchColleges } from "@/lib/CollegeApi"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -44,8 +45,7 @@ export function EditCollegeDialogue({ college }: { college: { college_code: stri
         },
     })
 
-    const [open, setOpen] = useState(false)
-    const { updateCollege } = useCollegeContext()
+    const [open, setOpen] = useState(false) 
 
     useEffect(() => {
         if (college) {
@@ -64,6 +64,7 @@ export function EditCollegeDialogue({ college }: { college: { college_code: stri
         })
 
         setOpen(false)
+        await fetchColleges()
         console.log(updated) // ✅ should now show the updated college from backend
     }
 

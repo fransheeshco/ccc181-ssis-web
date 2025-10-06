@@ -51,7 +51,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <a
-                    href="/colleges"
+                    href="/protected/colleges"
                     className="flex items-center gap-3 px-4 py-2"
                   >
                     <School className="h-6 w-6" />
@@ -63,7 +63,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <a
-                    href="/students"
+                    href="/protected/students"
                     className="flex items-center gap-3 px-4 py-2"
                   >
                     <Users className="h-6 w-6" />
@@ -75,7 +75,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <a
-                    href="/programs"
+                    href="/protected/programs"
                     className="flex items-center gap-3 px-4 py-2"
                   >
                     <BookOpen className="h-6 w-6" />
@@ -93,7 +93,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <a href="/settings" className="flex items-center gap-2">
+              <a href="/protected/settings" className="flex items-center gap-2">
                 <Settings className="h-5 w-5" />
                 <span>Settings</span>
               </a>

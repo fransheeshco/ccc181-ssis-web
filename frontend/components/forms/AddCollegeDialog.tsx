@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { useState } from "react"
 import { z } from "zod"
 import { Plus } from "lucide-react"
-import { College, useCollegeContext, CollegeProvider } from "@/app/context/collegeContext"
+import { createCollege, fetchColleges } from "@/lib/CollegeApi"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -26,7 +26,7 @@ interface AddCollegeDialogueProps {
   label: string
 }
 
-export function AddCollegeDialogue({ label }: AddCollegeDialogueProps) {
+export function AddCollegeDialog({ label }: AddCollegeDialogueProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -35,13 +35,13 @@ export function AddCollegeDialogue({ label }: AddCollegeDialogueProps) {
     },
   })
   const [open, setOpen] = useState(false)
-  const { addCollege } = useCollegeContext()
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      await addCollege(values)
-        setOpen(false)
-        form.reset()
+      await createCollege(values)
+      setOpen(false)
+      form.reset()
+      await fetchColleges()
     } catch (error) {
       console.error("Failed to add college:", error)
     }
@@ -63,6 +63,7 @@ export function AddCollegeDialogue({ label }: AddCollegeDialogueProps) {
         >
           <Plus className="h-6 w-6 sm:h-5 sm:w-5" />
           <span className="hidden sm:inline">{label}</span>
+          Add College
         </Button>
       </DialogTrigger>
 
