@@ -51,6 +51,19 @@ def get_colleges_model(limit=10, offset=0, search=None, sort_by="college_code", 
         results = [dict(zip(colnames, row)) for row in cur.fetchall()]
 
         return results
+    
+def get_total_colleges_model(search=None):
+    with db.get_cursor(commit=False) as cur:
+        query = "SELECT COUNT(*) FROM college"
+        params = []
+
+        if search:
+            query += " WHERE college_code ILIKE %s OR college_name ILIKE %s"
+            params.extend([f"%{search}%", f"%{search}%"])
+
+        cur.execute(query, params)
+        total_count = cur.fetchone()[0]
+        return total_count
 
 def update_college_model(new_college_code=None, new_college_name=None, curr_code=None):
     with db.get_cursor(commit=True) as cur:

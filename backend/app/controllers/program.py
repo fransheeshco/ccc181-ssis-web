@@ -1,4 +1,4 @@
-from app.models.program import (add_programs_model, get_all_programs_model, update_programs_model, delete_programs_model)
+from app.models.program import (add_programs_model, get_all_programs_model, update_programs_model, delete_programs_model, get_total_programs_model)
 
 def create_program_controller(program_code, program_name, college_code):
     try:
@@ -9,9 +9,11 @@ def create_program_controller(program_code, program_name, college_code):
     except Exception as e:
         return {"error": f"❌ {str(e)}"}, 400
 
-def fetch_programs_controller():
+def fetch_programs_controller(limit=10, offset=0, search=None, sort_by="program_code", order="ASC"):
     try:
-        return get_all_programs_model()
+        rows = get_all_programs_model(limit, offset, search, sort_by, order)
+        total = get_total_programs_model(search)
+        return {"rows": rows, "total": total}
     except Exception as e:
         return {"error": f"❌ {str(e)}"}, 400
 

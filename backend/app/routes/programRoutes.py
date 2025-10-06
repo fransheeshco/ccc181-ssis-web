@@ -1,6 +1,6 @@
 from flask_cors import CORS
 from flask import jsonify, request, Blueprint
-from app.controllers.program import (create_program_controller, delete_program_controller, update_program_controller, fetch_programs_controller)
+from app.controllers.program import (create_program_controller, get_total_programs_model, delete_program_controller, update_program_controller, fetch_programs_controller)
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 
@@ -12,15 +12,21 @@ def fetch_programs():
     valid_user = get_jwt_identity()
     if valid_user is None:
         return jsonify({"message": "❌ Unauthorized"}), 401
-    programs = fetch_programs_controller()
-    formatted = [
-        {
-            "program_code": program_code, "program_name": program_name, 
-            "college_code": college_code
-         } 
-        for program_code, program_name, college_code in programs
-    ]
-    return jsonify(formatted)
+    
+    limit = request.args.get("limit", default=10, type=int)
+    offset = request.args.get("offset", default=0, type=int)
+    search = request.args.get("search", default=None, type=str)
+    filter_by = request.args.get("sort_by", default="program_code", type=str)
+    order = request.args.get("order", default="ASC", type=str)
+
+    total_count = get_total_programs_model(search)
+    programs = fetch_programs_controller(limit, offset, search, filter_by, order)
+
+    return jsonify({
+        "programs": programs,
+        "rows": len(programs),
+        "total": total_count
+    })
 
 
 @program_bp.route('/create', methods=['POST'])

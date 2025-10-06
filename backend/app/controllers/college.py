@@ -1,4 +1,4 @@
-from app.models.college import (add_college_model, get_colleges_model, update_college_model, delete_college_model)
+from app.models.college import (add_college_model, get_total_colleges_model, get_colleges_model, update_college_model, delete_college_model)
 
 def create_college_controller(college_code, college_name):
     new_college = add_college_model(college_code=college_code, college_name=college_name)
@@ -8,9 +8,22 @@ def create_college_controller(college_code, college_name):
 
 def fetch_college_controller(limit=10, offset=0, search=None, sort_by="college_code", order="ASC"):
     try:
-        return get_colleges_model(limit, offset, search, sort_by, order )
+        rows = get_colleges_model(limit, offset, search, sort_by, order)
+        total = get_total_colleges_model(search)
+        print(rows, total)
+        return {"rows": rows, "total": total}
     except Exception as e:
-        return {"error": f"❌ {str(e)}"}, 400
+        print(f"Error fetching colleges: {e}")
+        return {"rows": [], "total": 0}
+
+    
+def get_total_colleges_controller(search=None):
+    try:
+        total = get_total_colleges_model(search)
+        return total
+    except Exception as e:
+        print(f"Error fetching total colleges: {e}")  # optional logging
+        return None
 
 def update_college_controller(new_college_code, new_college_name, current_code):
     rowcount = update_college_model(

@@ -2,6 +2,14 @@ from app.db import db
 
 def get_all_programs_model(limit=10, offset=0, search=None, sort_by="program_code", order="ASC"):
     with db.get_cursor() as cur:
+        valid_sort_columns = ["program_code", "program_name", "college_code"]
+        valid_orders = ["ASC", "DESC"]
+
+        if sort_by not in valid_sort_columns:
+            sort_by = "program_code"
+        if order.upper() not in valid_orders:
+            order = "ASC"
+
         basequery = "SELECT * FROM programs"
         params = []
 
@@ -13,8 +21,22 @@ def get_all_programs_model(limit=10, offset=0, search=None, sort_by="program_cod
         basequery += f" ORDER BY {sort_by} {order} LIMIT %s OFFSET %s"
         params.extend([limit, offset])
         cur.execute(basequery, tuple(params))
-        results = cur.fetchall()
+        colnames = [desc[0] for desc in cur.description]
+        results = [dict(zip(colnames, row)) for row in cur.fetchall()]
         return results
+
+def get_total_programs_model(search=None):
+    with db.get_cursor(commit=False) as cur:
+        query = "SELECT COUNT(*) FROM programs"
+        params = []
+
+        if search:
+            query += " WHERE program_code ILIKE %s OR program_name ILIKE %s OR college_code ILIKE %s"
+            params.extend([f"%{search}%", f"%{search}%", f"%{search}%"])
+
+        cur.execute(query, params)
+        total_count = cur.fetchone()[0]
+        return total_count
     
 def add_programs_model(program_code, program_name, college_code):
     with db.get_cursor(commit=True) as cur:

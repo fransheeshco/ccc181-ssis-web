@@ -2,7 +2,8 @@ from flask_cors import CORS
 from flask import jsonify, request, Blueprint
 from app.controllers.student import (
     create_student_controller, fetch_students_controller,
-    update_student_controller, delete_student_controller
+    update_student_controller, delete_student_controller,
+    get_total_students_model
 )
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
@@ -15,19 +16,24 @@ def fetch_students():
     valid_user = get_jwt_identity()
     if valid_user is None:
         return jsonify({"message": "❌ Unauthorized"}), 401
-    students = fetch_students_controller()
-    formatted = [
-    {
-        "student_id": student_id,
-        "first_name": first_name,
-        "last_name": last_name,
-        "program": program_code,
-        "year_level": year_level,
-        "gender": gender
-    }
-    for student_id, first_name, last_name, year_level, gender, program_code in students
-    ]
-    return jsonify(formatted)
+    
+    limit = request.args.get("limit", default=10, type=int)
+    offset = request.args.get("offset", default=0, type=int)
+    search = request.args.get("search", default=None, type=str)
+    filter_by = request.args.get("sort_by", default="student_id", type=str)
+    order = request.args.get("order", default="ASC", type=str)
+
+    print(f"Received params - limit: {limit}, offset: {offset}, search: {search}, sort_by: {filter_by}, order: {order}")
+        
+
+    total_count = get_total_students_model(search) 
+    students = fetch_students_controller(limit, offset, search, filter_by, order)
+
+    return jsonify({
+        "students": students,
+        "rows": len(students),
+        "total": total_count
+    })
 
 @student_bp.route('/create', methods=['POST'])
 @jwt_required()

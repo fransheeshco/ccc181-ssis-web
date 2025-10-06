@@ -2,14 +2,17 @@ from app.models.student import (
     get_all_students_model,
     create_student_model,
     update_student_model,
-    delete_student_model
+    delete_student_model,
+    get_total_students_model
 )
 import psycopg2
 
 
-def fetch_students_controller():
+def fetch_students_controller(limit=10, offset=0, search=None, sort_by="student_id", order="ASC"):
     try:
-        return get_all_students_model()
+        rows = get_all_students_model(limit, offset, search, sort_by, order)
+        total = get_total_students_model(search)
+        return {"rows": rows, "total": total}
     except psycopg2.Error as e:
         return {"error": f"Database error: {e}"}, 500
 

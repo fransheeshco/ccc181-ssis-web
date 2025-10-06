@@ -1,6 +1,6 @@
 from flask_cors import CORS
 from flask import jsonify, Blueprint, request
-from app.controllers.college import (fetch_college_controller, update_college_controller, create_college_controller, delete_college_controller) 
+from app.controllers.college import (fetch_college_controller, get_total_colleges_controller, update_college_controller, create_college_controller, delete_college_controller) 
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 
@@ -13,15 +13,24 @@ def fetch_colleges_route():
     if valid_user is None:
         return jsonify({"message": "❌ Unauthorized"}), 401
 
-    # ✅ Extract query params from URL
+    # Extract query params
     limit = request.args.get("limit", default=10, type=int)
     offset = request.args.get("offset", default=0, type=int)
     search = request.args.get("search", default=None, type=str)
-    sort_by = request.args.get("sort_by", default="college_code", type=str)
+    filter_by = request.args.get("sort_by", default="college_code", type=str)
     order = request.args.get("order", default="ASC", type=str)
 
-    colleges = fetch_college_controller(limit, offset, search, sort_by, order)
-    return jsonify(colleges)
+    # Fetch total count first
+    total_count = get_total_colleges_controller(search)  # you need to implement this
+
+    # Fetch paginated rows
+    colleges = fetch_college_controller(limit, offset, search, filter_by, order)
+
+    return jsonify({
+        "colleges": colleges,
+        "rows": len(colleges),
+        "total": total_count
+    })
 
 
 @college_bp.route('/create', methods=['POST'])
