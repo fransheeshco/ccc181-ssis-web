@@ -1,4 +1,4 @@
-from app.models.user import create_user_model, login_user_model
+from app.models.user import create_user_model, login_user_model, get_user_by_id_model
 from flask import request, jsonify
 from flask_jwt_extended import (
     create_access_token, create_refresh_token,
@@ -63,4 +63,18 @@ def logout_user_controller():
     unset_jwt_cookies(resp)
     return resp, 200
 
-
+@jwt_required()
+def get_current_user_controller():
+    current_user_id = get_jwt_identity()
+    user = get_user_by_id_model(current_user_id)
+    
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+        
+    return jsonify({
+        "user": {
+            "user_id": str(user["user_id"]),
+            "username": user["username"],
+            "email": user["email"]
+        }
+    }), 200

@@ -1,6 +1,7 @@
 from app.controllers.user import (
     register_user_controller, login_user_controller, 
-    refresh_token_controller, logout_user_controller
+    refresh_token_controller, logout_user_controller,
+    get_current_user_controller
 )
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
@@ -40,4 +41,7 @@ def refresh_token_route():
 def logout_user_route():
     return logout_user_controller()
 
-
+@user_bp.route('/me', methods=['GET'])
+@jwt_required()
+def get_current_user_route():
+    return get_current_user_controller()

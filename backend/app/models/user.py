@@ -31,3 +31,33 @@ def login_user_model(email, password):
                 "email": user['email']
             }
         return None
+    
+def get_user_by_id_model(user_id):
+    with db.get_cursor() as cur:
+        cur.execute(
+            "SELECT user_id, username, email FROM users WHERE user_id = %s",
+            (user_id,)
+        )
+        user = cur.fetchone()
+        if user:
+            return {
+                "user_id": user['user_id'],
+                "username": user['username'],
+                "email": user['email']
+            }
+        return None
+
+def get_user_info_model(email):
+    with db.get_cursor() as cur:
+        cur.execute(
+            "SELECT user_id, username, email FROM users WHERE email = %s",
+            (email,)
+        )
+        user = cur.fetchone()
+        if user:
+            return {
+                "user_id": user["user_id"],
+                "username": user["username"],
+                "email": user["email"]
+            }
+        return None
