@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-
+import { showToast } from "@/lib/toast"
 import { Trash } from "lucide-react"
 
 interface DeleteDialogProps {
@@ -46,6 +46,7 @@ export function DeleteDialog({onConfirm, itemName}: DeleteDialogProps) {
             variant="destructive"
             onClick={() => {
               onConfirm()
+              showToast("Sucessfully deleted.")
               setOpen(false)
             }}
           >

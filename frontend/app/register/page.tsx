@@ -8,25 +8,26 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LogIn } from "lucide-react";
+import { showToast } from "@/lib/toast";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const { login, loading } = useAuth();
+  const { register, loading } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(email, password);
-      router.push("/dashboard");
+      await register(username, email, password);
+      showToast("User created successfully.", "success")
+      router.push("/"); 
     } catch (err) {
       console.error(err);
     }
@@ -75,7 +76,7 @@ export default function LoginPage() {
               />
             </div>
             <Button type="submit" disabled={loading}>
-              {loading ? "Logging in..." : "Login"}
+              {loading ? "Creating user..." : "Loading..."}
             </Button>
           </form>
             <p className="mt-4 text-sm text-center text-gray-600">

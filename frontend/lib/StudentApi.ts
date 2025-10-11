@@ -1,14 +1,6 @@
 import { studentFilters, Student, StudentsData, fetchStudentReponse, updateStudentPayload, deleteStudentPayload } from "@/lib/types/studentType"
 import axiosInstance from "./axios";
 
-async function handleReponse(res: Response) {
-    if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        throw new Error(err.message || "API request failed")
-    }
-    return res.json()
-}
-
 export async function fetchStudents(filters: studentFilters = {}) {
     const params: Record<string, string> = {};
 

@@ -27,8 +27,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Edit } from "lucide-react"
-import { updateStudentPayload } from "@/lib/types/studentType"
 import { updateStudent } from "@/lib/StudentApi"
+import { showToast } from "@/lib/toast"
 
 const formSchema = z.object({
   student_id: z.string().min(1),
@@ -67,8 +67,10 @@ export function EditStudentDialog({ student }: { student: Student }) {
       await updateStudent({...values, 
         curr_code: student.student_id
       })
+      showToast("Student Edited Successfully.", "success")
+      setOpen(false)
     } catch (error) {
-      console.log(error)
+      showToast(`Error: ${error}`, 'warning')
     }
   }
 
@@ -110,7 +112,7 @@ return (
                 <FormItem>
                   <FormLabel>First Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter first name" {...field} />
+                    <Input type="text" placeholder="Enter first name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -124,7 +126,7 @@ return (
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter last name" {...field} />
+                    <Input type="text" placeholder="Enter last name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -138,7 +140,7 @@ return (
                 <FormItem>
                   <FormLabel>Program</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter program" {...field} />
+                    <Input type="text" placeholder="Enter program" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -153,12 +155,9 @@ return (
                   <FormLabel>Year</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
+                    type="text"
                       placeholder="Enter year level"
                       {...field}
-                      onChange={(e) =>
-                        field.onChange(parseInt(e.target.value, 10))
-                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -173,7 +172,7 @@ return (
                 <FormItem>
                   <FormLabel>Gender</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter gender" {...field} />
+                    <Input type="text" placeholder="Enter gender" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

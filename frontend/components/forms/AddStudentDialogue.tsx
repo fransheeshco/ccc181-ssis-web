@@ -16,6 +16,7 @@ import {
   DialogFooter, DialogTrigger
 } from "@/components/ui/dialog"
 import { createStudent } from "@/lib/StudentApi"
+import { showToast } from "@/lib/toast"
 
 const formSchema = z.object({
   student_id: z.string().min(1),
@@ -47,9 +48,10 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       await createStudent(values)
+      showToast("Student Added Successfully", 'success')
       setOpen(false)
     } catch (error) {
-      console.log(error)
+      showToast(`Error: ${error}`, 'warning')
     }
   }
 
@@ -69,6 +71,7 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
           "
         >
           <Plus className="h-6 w-6 sm:h-5 sm:w-5" />
+          Add Student
           <span className="hidden sm:inline">{label}</span>
         </Button>
       </DialogTrigger>

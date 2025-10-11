@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { Edit } from "lucide-react"
-import { z } from "zod"
+import { success, z } from "zod"
 import { useCollegeContext } from "@/app/context/collegeContext"
 import { updateCollege, fetchColleges } from "@/lib/CollegeApi"
 
@@ -18,6 +18,7 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { showToast } from "@/lib/toast"
 
 import {
     Dialog,
@@ -45,7 +46,7 @@ export function EditCollegeDialogue({ college }: { college: { college_code: stri
         },
     })
 
-    const [open, setOpen] = useState(false) 
+    const [open, setOpen] = useState(false)
 
     useEffect(() => {
         if (college) {
@@ -57,15 +58,19 @@ export function EditCollegeDialogue({ college }: { college: { college_code: stri
     }, [college, form])
 
     async function onSubmit(values: { new_college_code: string; new_college_name: string }) {
-        const updated = await updateCollege({
-            curr_code: college.college_code,
-            college_code: values.new_college_code,
-            college_name: values.new_college_name,
-        })
-
-        setOpen(false)
-        await fetchColleges()
-        console.log(updated) // ✅ should now show the updated college from backend
+        try {
+            const updated = await updateCollege({
+                curr_code: college.college_code,
+                college_code: values.new_college_code,
+                college_name: values.new_college_name,
+            })
+            showToast('College Editted Successfully.', "success")
+            setOpen(false)
+            await fetchColleges()
+            console.log(updated) // ✅ should now show the updated college from backend
+        } catch (error) {
+            showToast(`Error: ${error}`, 'warning')
+        }
     }
 
     return (

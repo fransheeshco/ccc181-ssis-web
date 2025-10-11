@@ -16,6 +16,7 @@ import {
   DialogFooter, DialogTrigger
 } from "@/components/ui/dialog"
 import { createProgram } from "@/lib/ProgramApi"
+import { showToast } from "@/lib/toast"
 
 const formSchema = z.object({
   program_code: z.string().min(1),
@@ -41,10 +42,11 @@ export function AddProgramDialog({ label }: AddProgramDialogProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       await createProgram(values)
+      showToast("Program Added Successfully", 'success')
       setOpen(false)
       form.reset()
     } catch (error) {
-      console.error("Failed to add college:", error)
+      showToast(`Error: ${error}`, 'warning')
     }
   }
 
@@ -63,6 +65,7 @@ export function AddProgramDialog({ label }: AddProgramDialogProps) {
           "
         >
           <Plus className="h-6 w-6 sm:h-5 sm:w-5" />
+          Add Program
           <span className="hidden sm:inline">{label}</span>
         </Button>
       </DialogTrigger>

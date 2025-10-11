@@ -3,28 +3,45 @@
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation"
+import axios from "axios"
 
 interface SettingsCardProps {
   user: {
-    name: string
+    username: string
     email: string
   }
 }
 
 export function SettingsCard({ user }: SettingsCardProps) {
-  const Router = useRouter();
+  const router = useRouter()
+
   const handleLogout = async () => {
-    const resp = await fetch("http://localhost:8000/api/users/logout", {
-      method: "POST",
-      credentials: "include",
-    })
-    if (resp.ok) {
-      Router.push("/")
-      return
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/users/logout",
+        {}, // Empty body
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+
+      if (response.status === 200) {
+        console.log("User logged out successfully")
+        router.push("/")
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Logout failed:", error.response?.data || error.message)
+      } else {
+        console.error("Logout failed:", error)
+      }
+      // Even if there's an error, we can still redirect to home
+      router.push("/")
     }
-    // Handle error case as needed
-    console.log("User logged out")
   }
 
   return (
@@ -37,7 +54,7 @@ export function SettingsCard({ user }: SettingsCardProps) {
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-1">
             <Label>Username</Label>
-            <p className="text-gray-800">{user.name}</p>
+            <p className="text-gray-800">{user.username}</p>
           </div>
 
           <div className="flex flex-col gap-1">

@@ -6,6 +6,7 @@ import { useState } from "react"
 import { z } from "zod"
 import { Plus } from "lucide-react"
 import { createCollege, fetchColleges } from "@/lib/CollegeApi"
+import { showToast } from "@/lib/toast"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -39,11 +40,12 @@ export function AddCollegeDialog({ label }: AddCollegeDialogueProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       await createCollege(values)
+      showToast("College Added Successfully.", "success")
       setOpen(false)
       form.reset()
       await fetchColleges()
     } catch (error) {
-      console.error("Failed to add college:", error)
+      showToast(`Error: ${error}`, 'warning')
     }
   }
 

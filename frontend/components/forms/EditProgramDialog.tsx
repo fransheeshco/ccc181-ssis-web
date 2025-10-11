@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { success, z } from "zod"
 import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { updateProgramPayload } from "@/lib/types/programTypes"
+import { showToast } from "@/lib/toast"
 import { updateProgram } from "@/lib/ProgramApi"
 
 import {
@@ -64,8 +64,10 @@ export function EditProgramDialog({ program }: { program: Program }) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       await updateProgram({...values, curr_code: program.program_code})
-    } catch (error) {
+      showToast('Program Edited Successfully', 'success')
       setOpen(false)  
+    } catch (error) {
+      showToast(`Error: ${error}`, 'warning')
     }
   }
 
