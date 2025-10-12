@@ -89,3 +89,16 @@ def delete_college_model(college_code):
             "DELETE FROM college WHERE college_code = %s RETURNING *;", (college_code,)
         )
         return cur.rowcount
+
+def get_all_colleges_model():
+    with db.get_cursor(commit=False) as cur:
+        cur.execute(
+            "SELECT college_code, college_name FROM college ORDER BY college_code"
+        )
+        columns = [desc[0] for desc in cur.description]
+        colleges = cur.fetchall()
+        
+        return [
+            dict(zip(columns, row))
+            for row in colleges
+        ]

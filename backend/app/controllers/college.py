@@ -1,4 +1,4 @@
-from app.models.college import (add_college_model, get_total_colleges_model, get_colleges_model, update_college_model, delete_college_model)
+from app.models.college import (add_college_model, get_all_colleges_model, get_total_colleges_model, get_colleges_model, update_college_model, delete_college_model)
 
 def create_college_controller(college_code, college_name):
     new_college = add_college_model(college_code=college_code, college_name=college_name)
@@ -46,3 +46,7 @@ def delete_college_controller(college_code):
     if rowcount == 0:
         return {"error": f"⚠️ College '{college_code}' not found"}
     return {"message": "✅ College deleted successfully"}
+
+def get_all_colleges_controller():
+    colleges = get_all_colleges_model()
+    return colleges

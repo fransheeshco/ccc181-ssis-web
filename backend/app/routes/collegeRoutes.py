@@ -1,6 +1,6 @@
 from flask_cors import CORS
 from flask import jsonify, Blueprint, request
-from app.controllers.college import (fetch_college_controller, get_total_colleges_controller, update_college_controller, create_college_controller, delete_college_controller) 
+from app.controllers.college import (fetch_college_controller, get_all_colleges_controller, get_total_colleges_controller, update_college_controller, create_college_controller, delete_college_controller) 
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 
@@ -66,3 +66,12 @@ def delete_college(college_code):
         return jsonify({"message": "❌ Unauthorized"}), 401
     
     return jsonify(delete_college_controller(college_code))
+
+@college_bp.route("/getcolleges", methods=["GET"])  
+@jwt_required()
+def get_all_colleges_route(): 
+    valid_user = get_jwt_identity()
+    if valid_user is None:
+        return jsonify({"message": "❌ Unauthorized"}), 401
+    
+    return jsonify(get_all_colleges_controller())
