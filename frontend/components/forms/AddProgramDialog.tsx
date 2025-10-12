@@ -52,9 +52,9 @@ export function AddProgramDialog({ label }: AddProgramDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      program_code: "BSXX",
-      program_name: "Bachelors of Science in ",
-      college_code: "College"
+      program_code: "",
+      program_name: "",
+      college_code: ""
     },
   })
 

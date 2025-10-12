@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { z } from "zod"
 import { Plus } from "lucide-react"
 
@@ -17,6 +17,15 @@ import {
 } from "@/components/ui/dialog"
 import { createStudent } from "@/lib/StudentApi"
 import { showToast } from "@/lib/toast"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { getAllPrograms } from "@/lib/ProgramApi"
+import { Program } from "@/lib/types/programTypes"
 
 const formSchema = z.object({
   student_id: z.string().min(1),
@@ -36,20 +45,46 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       student_id: "",
-      first_name: "John",
-      last_name: "Doe",
-      program_code: "College",
-      year_level: "1",
-      gender: "Male",
+      first_name: "",
+      last_name: "",
+      program_code: "",
+      year_level: "",
+      gender: "",
     },
   })
   const [open, setOpen] = useState(false)
+  const [programs, setPrograms] = useState<Program[]>([])
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (open) {
+      fetchPrograms()
+    }
+  }, [open])
+
+  async function fetchPrograms() {
+    try {
+      setLoading(true)
+      const programData = await getAllPrograms()
+      setPrograms(programData)
+
+      // Auto-select first program if none selected
+      if (programData.length > 0 && !form.getValues().program_code) {
+        form.setValue('program_code', programData[0].program_code)
+      }
+    } catch (error) {
+      showToast(`Error fetching programs: ${error}`, 'warning')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       await createStudent(values)
       showToast("Student Added Successfully", 'success')
       setOpen(false)
+      form.reset() // Added form reset
     } catch (error) {
       showToast(`Error: ${error}`, 'warning')
     }
@@ -58,7 +93,6 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {/* FAB on mobile, normal button on desktop */}
         <Button
           className="
             fixed bottom-4 left-4
@@ -128,10 +162,28 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
               name="program_code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Program</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter program" {...field} />
-                  </FormControl>
+                  <FormLabel>Program</FormLabel> {/* Changed from College to Program */}
+                  <Select 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value}
+                    disabled={loading}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder={loading ? "Loading programs..." : "Select a program"} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {programs.map((program) => (
+                        <SelectItem 
+                          key={program.program_code} // Use program_code as key
+                          value={program.program_code} // Use program_code as value
+                        >
+                          {program.program_code} - {program.program_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -141,13 +193,24 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
               name="year_level"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Year</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter year level"
-                      {...field}
-                    />
-                  </FormControl>
+                  <FormLabel>Year Level</FormLabel>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select year level" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="1">1st Year</SelectItem>
+                      <SelectItem value="2">2nd Year</SelectItem>
+                      <SelectItem value="3">3rd Year</SelectItem>
+                      <SelectItem value="4">4th Year</SelectItem>
+                      <SelectItem value="4+">4th+ Year</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -158,15 +221,29 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Gender</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter gender" {...field} />
-                  </FormControl>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <DialogFooter>
-              <Button type="submit">Submit</Button>
+              <Button type="submit" disabled={loading}>
+                Submit
+              </Button>
             </DialogFooter>
           </form>
         </Form>
