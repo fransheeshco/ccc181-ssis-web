@@ -79,3 +79,16 @@ def delete_programs_model(program_code):
             "DELETE FROM programs WHERE program_code = %s RETURNING *;", (program_code,)
         )
         return cur.rowcount
+
+def get_all_programs_wo_filters_model():
+    with db.get_cursor(commit=False) as cur:
+        cur.execute(
+            "SELECT program_code, program_name FROM programs ORDER BY program_code"
+        )
+        columns = [desc[0] for desc in cur.description]
+        programs = cur.fetchall()
+
+        return [
+            dict(zip(columns, row))
+            for row in programs
+        ]

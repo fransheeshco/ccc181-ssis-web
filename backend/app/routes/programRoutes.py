@@ -1,6 +1,10 @@
 from flask_cors import CORS
 from flask import jsonify, request, Blueprint
-from app.controllers.program import (create_program_controller, get_total_programs_model, delete_program_controller, update_program_controller, fetch_programs_controller)
+from app.controllers.program import (
+    create_program_controller, get_total_programs_model, 
+    delete_program_controller, update_program_controller, 
+    fetch_programs_controller, get_programs_controller
+)
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 
@@ -69,3 +73,12 @@ def delete_program(program_code):
     if deleted: 
         return jsonify({"message": "Program deleted", "deleted": dict(deleted)})
     return jsonify({"error": "Program not found"}), 404
+
+@program_bp.route("/getprograms", methods=["GET"])
+@jwt_required()
+def get_all_programs():
+    valid_user = get_jwt_identity()
+    if valid_user is None:
+        return jsonify({"message": "❌ Unauthorized"}), 401
+    
+    return jsonify(get_programs_controller())

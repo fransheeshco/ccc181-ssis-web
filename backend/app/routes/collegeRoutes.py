@@ -1,6 +1,10 @@
 from flask_cors import CORS
 from flask import jsonify, Blueprint, request
-from app.controllers.college import (fetch_college_controller, get_all_colleges_controller, get_total_colleges_controller, update_college_controller, create_college_controller, delete_college_controller) 
+from app.controllers.college import (
+    fetch_college_controller, get_all_colleges_controller, 
+    get_total_colleges_controller, update_college_controller, 
+    create_college_controller, delete_college_controller
+) 
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 

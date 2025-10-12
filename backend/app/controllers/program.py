@@ -1,4 +1,8 @@
-from app.models.program import (add_programs_model, get_all_programs_model, update_programs_model, delete_programs_model, get_total_programs_model)
+from app.models.program import (
+    add_programs_model, get_all_programs_model, 
+    update_programs_model, delete_programs_model, 
+    get_total_programs_model, get_all_programs_wo_filters_model
+)
 
 def create_program_controller(program_code, program_name, college_code):
     try:
@@ -36,3 +40,11 @@ def delete_program_controller(program_code):
     except Exception as e:
         return {"error": f"❌ {str(e)}"}, 400
     return {"message": "✅ Program deleted successfully"}
+
+def get_programs_controller():
+    try: 
+        programs = get_all_programs_wo_filters_model()
+        return programs
+    except Exception as e: 
+        return {"error": f"❌ {str(e)}"}, 400
+    
