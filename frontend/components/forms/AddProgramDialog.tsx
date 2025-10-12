@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { z } from "zod"
 import { Plus } from "lucide-react"
 
@@ -16,7 +16,16 @@ import {
   DialogFooter, DialogTrigger
 } from "@/components/ui/dialog"
 import { createProgram } from "@/lib/ProgramApi"
+import { getAllColleges } from "@/lib/CollegeApi"
 import { showToast } from "@/lib/toast"
+import { College } from "@/lib/types/collegeTypes"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 const formSchema = z.object({
   program_code: z.string().min(1),
@@ -29,15 +38,43 @@ interface AddProgramDialogProps {
 }
 
 export function AddProgramDialog({ label }: AddProgramDialogProps) {
+  const [colleges, setColleges] = useState<College[]>([])
+  const [loading, setLoading] = useState(false)
+  const [open, setOpen] = useState(false)
+
+  // Fetch colleges when dialog opens
+  useEffect(() => {
+    if (open) {
+      fetchColleges()
+    }
+  }, [open])
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      program_code: "BSCS",
-      program_name: "Bachelors of Science in Computer Science",
-      college_code: "CCS"
+      program_code: "BSXX",
+      program_name: "Bachelors of Science in ",
+      college_code: "College"
     },
   })
-  const [open, setOpen] = useState(false)
+
+  async function fetchColleges() {
+    try {
+      setLoading(true)
+      const collegeData = await getAllColleges()
+      setColleges(collegeData)
+
+      // Auto-select first college if none selected
+      if (collegeData.length > 0 && !form.getValues().college_code) {
+        form.setValue('college_code', collegeData[0].college_code)
+      }
+    } catch (error) {
+      showToast(`Error fetching colleges: ${error}`, 'warning')
+    } finally {
+      setLoading(false)
+    }
+  }
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -109,10 +146,28 @@ export function AddProgramDialog({ label }: AddProgramDialogProps) {
               name="college_code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>College Code</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter College Code" {...field} />
-                  </FormControl>
+                  <FormLabel>College</FormLabel>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value}
+                    disabled={loading}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder={loading ? "Loading colleges..." : "Select a college"} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {colleges.map((college) => (
+                        <SelectItem 
+                          key={college.college_code} 
+                          value={college.college_code}
+                        >
+                          {college.college_code} - {college.college_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

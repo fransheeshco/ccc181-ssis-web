@@ -68,3 +68,13 @@ export async function deleteCollege(data: deleteCollegePayload) {
     throw new Error(err.response?.data?.msg || "API request failed");
   }
 }
+
+export async function getAllColleges(): Promise<College[]> {
+  try {
+    const res = await axiosInstance.get<College[]>("/colleges/getcolleges");
+    return res.data;
+  } catch (err: any) {
+    console.error("Failed to fetch all colleges:", err.response?.data || err.message);
+    throw new Error(err.response?.data?.msg || "Failed to fetch colleges");
+  }
+}
