@@ -5,7 +5,7 @@ import { ArrowUpDown } from "lucide-react"
 import { EditStudentDialog } from "@/components/forms/EditStudentDialog"
 import { DeleteDialog } from "@/components/forms/DeleteDialog"
 import * as z from 'zod'
-
+import { deleteStudent } from "@/lib/StudentApi"
 import { Button } from "@/components/ui/button"
 
 type StudentID = `${number}${number}${number}${number}-${number}${number}${number}${number}`;
@@ -136,8 +136,11 @@ export const columns: ColumnDef<Student>[] = [
                 <>
                     <EditStudentDialog student={student} />
                     <DeleteDialog
-                        itemName={student.student_id + ": " + student.last_name}
-                        onConfirm={() => console.log("Delete Student:", student.student_id)}
+                        itemName={`${student.student_id}: ${student.student_id}`}
+                            onConfirm={async () => {
+                            const result = await deleteStudent(student);
+                            return result; 
+                    }}
                     />
                 </>
             )

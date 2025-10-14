@@ -47,6 +47,7 @@ export function AddCollegeDialog({ label }: AddCollegeDialogueProps) {
       await fetchColleges()
     } catch (error) {
       showToast(`Error: ${error}`, 'warning')
+      setOpen(false)
     }
   }
 

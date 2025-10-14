@@ -5,7 +5,7 @@ import { createContext, useContext, useState, ReactNode } from "react"
 import { fetchProgram as apiFetchPrograms } from "@/lib/ProgramApi"
 import { Program } from "@/lib/types/programTypes"
 
-type ProgramContextType = {
+export type ProgramContextType = {
   programs: Program[]
   fetchProgram: () => Promise<void>
 }

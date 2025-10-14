@@ -15,18 +15,41 @@ import { showToast } from "@/lib/toast"
 import { Trash } from "lucide-react"
 
 interface DeleteDialogProps {
-  onConfirm: () => void
+  onConfirm: () => Promise<{ error?: string; message?: string }> | void
   itemName?: string
 }
 
+export function DeleteDialog({ onConfirm, itemName }: DeleteDialogProps) {
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-export function DeleteDialog({onConfirm, itemName}: DeleteDialogProps) {
-    const [open, setOpen] = useState(false)
+  const handleDelete = async () => {
+    setLoading(true)
+    try {
+      const result = await onConfirm() // await response from delete API
+      console.log(result)
+      
+      if (result && "error" in result) {
+        showToast(result.error || "❌ Failed to delete item.")
+      } else {
+        showToast(result?.message || "✅ Successfully deleted.")
+        setOpen(false)
+      }
+    } catch (err) {
+      console.error("DeleteDialog error:", err)
+      showToast("❌ An unexpected error occurred.")
+    } finally {
+      setLoading(false)
+      setOpen(false)
+    }
+  }
 
-    return (
+  return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild className="m-2">
-          <Button variant={'destructive'}><Trash className="h-6 w-6" /></Button>
+        <Button variant="destructive">
+          <Trash className="h-6 w-6" />
+        </Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-md">
@@ -39,18 +62,15 @@ export function DeleteDialog({onConfirm, itemName}: DeleteDialogProps) {
         </DialogHeader>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
+          <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
             Cancel
           </Button>
           <Button
             variant="destructive"
-            onClick={() => {
-              onConfirm()
-              showToast("Sucessfully deleted.")
-              setOpen(false)
-            }}
+            onClick={handleDelete}
+            disabled={loading}
           >
-            Delete
+            {loading ? "Deleting..." : "Delete"}
           </Button>
         </DialogFooter>
       </DialogContent>

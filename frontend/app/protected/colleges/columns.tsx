@@ -65,8 +65,11 @@ export const columns: ColumnDef<College>[] = [
                 <>
                     <EditCollegeDialogue college={college} />
                     <DeleteDialog
-                        itemName={college.college_code + ": " + college.college_name}
-                        onConfirm={() => deleteCollege({ college_code: college.college_code })}
+                    itemName={`${college.college_code}: ${college.college_name}`}
+                        onConfirm={async () => {
+                        const result = await deleteCollege(college);
+                        return result; // this will be { message: "..."} or { error: "..." }
+                    }}
                     />
                 </>
             )

@@ -23,7 +23,7 @@ export type updateProgramPayload = {
 }
 
 export type deleteProgramPayload = {
-    program_code: string
+    program_code: string,
 }
 
 export type programFilters = {

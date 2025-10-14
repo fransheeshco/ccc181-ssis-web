@@ -1,82 +1,86 @@
 import { studentFilters, Student, StudentsData, fetchStudentReponse, updateStudentPayload, deleteStudentPayload } from "@/lib/types/studentType"
 import axiosInstance from "./axios";
 
-export async function fetchStudents(filters: studentFilters = {}) {
-    const params: Record<string, string> = {};
+export async function fetchStudents(filters: studentFilters = {}): Promise<fetchStudentReponse> {
+  const params: Record<string, string> = {};
 
-    if (filters.search) params.search = filters.search;
-    if (filters.sortBy) params.sort_by = filters.sortBy;
-    if (filters.orderBy) params.order = filters.orderBy;
-    if (filters.offset !== undefined) params.offset = filters.offset.toString();
-    if (filters.limit !== undefined) params.limit = filters.limit.toString();
+  if (filters.search) params.search = filters.search;
+  if (filters.sortBy) params.sort_by = filters.sortBy;
+  if (filters.orderBy) params.order = filters.orderBy;
+  if (filters.offset !== undefined) params.offset = filters.offset.toString();
+  if (filters.limit !== undefined) params.limit = filters.limit.toString();
 
-    try {
-        const res = await axiosInstance.get<fetchStudentReponse>("/students/", { params });
-        console.log(res)
-        return res.data;
-    } catch (err: any) {
-        console.error("API request failed:", err.response?.data || err.message);
-        throw new Error(err.response?.data?.msg || "API request failed");
-    }
+  try {
+    const res = await axiosInstance.get<fetchStudentReponse>("/students/", { params });
+    return res.data;
+  } catch (err: any) {
+    console.error("API request failed:", err.response?.data || err.message);
+    throw new Error(err.response?.data?.message || "❌ Failed to fetch students");
+  }
 }
 
-export async function createStudent(data: Student) {
-    const { student_id,
-        first_name,
-        last_name,
-        program_code,
-        year_level,
-        gender,
-        } = data;
 
-    try {
-        const res = await axiosInstance.post<Student>("/students/create", {
-            student_id,
-            first_name,
-            last_name,
-            program_code,
-            year_level,
-            gender,
-        });
+export async function createStudent(data: Student): Promise<{ message?: string; error?: string }> {
+  const { student_id, first_name, last_name, program_code, year_level, gender } = data;
 
-        return res.data; // new college returned from API
-    } catch (err: any) {
-        console.error("API request failed:", err.response?.data || err.message);
-        throw new Error(err.response?.data?.msg || "API request failed");
-    }
+  try {
+    const res = await axiosInstance.post<{ message?: string }>("/students/create", {
+      student_id,
+      first_name,
+      last_name,
+      program_code,
+      year_level,
+      gender,
+    });
+
+    return { message: res.data?.message || "✅ Student created successfully" };
+  } catch (err: any) {
+    console.error("API request failed:", err.response?.data || err.message);
+    return { error: err.response?.data?.message || "❌ Failed to create student" };
+  }
 }
 
-export async function updateStudent(data: updateStudentPayload) {
-    const { student_id,
-            first_name,
-            last_name,
-            program_code,
-            year_level,
-            gender,
-        curr_code } = data
 
-    try {
-        const res = await axiosInstance.put<updateStudentPayload>(`/students/update/${curr_code}`, {
-            student_id,
-            first_name,
-            last_name,
-            program_code,
-            year_level,
-            gender,
-            curr_code
-        })
-    } catch (err: any) {
-        console.error("API request failed:", err.response?.data || err.message);
-        throw new Error(err.response?.data?.msg || "API request failed");
-    }
+export async function updateStudent(
+  data: updateStudentPayload
+): Promise<{ message?: string; error?: string }> {
+  const { student_id, first_name, last_name, program_code, year_level, gender, curr_code } = data;
+
+  try {
+    const res = await axiosInstance.put<{ message?: string }>(`/students/update/${curr_code}`, {
+      student_id,
+      first_name,
+      last_name,
+      program_code,
+      year_level,
+      gender,
+    });
+
+    return { message: res.data?.message || "✅ Student updated successfully" };
+  } catch (err: any) {
+    console.error("API request failed:", err.response?.data || err.message);
+    return { error: err.response?.data?.message || "❌ Failed to update student" };
+  }
 }
 
-export async function deleteStudent(data: deleteStudentPayload) {
-    const { student_id } = data
-    try {
-        const res = await axiosInstance.delete<deleteStudentPayload>(`/students/delete/${student_id}`)
-    } catch (err: any) {
-        console.error("API request failed:", err.response?.data || err.message);
-        throw new Error(err.response?.data?.msg || "API request failed");
+export async function deleteStudent(
+  data: deleteStudentPayload
+): Promise<{ message?: string; error?: string }> {
+  const { student_id } = data;
+
+  try {
+    const res = await axiosInstance.delete<{ message?: string; error?: string }>(
+      `/students/delete/${student_id}`
+    );
+
+    // ✅ Only return keys that actually exist
+    if (res.data?.error) {
+      return { error: res.data.error };
     }
+    return { message: res.data?.message || "✅ Student deleted successfully" };
+  } catch (err: any) {
+    console.error("API request failed:", err.response?.data || err.message);
+    return { error: err.response?.data?.error || "❌ Failed to delete student" };
+  }
 }
+

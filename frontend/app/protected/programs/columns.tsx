@@ -14,6 +14,8 @@ const ProgramSchema = z.object({
     college_code: z.string().min(1, "College code is required"),
 })
 
+import { deleteProgram } from "@/lib/ProgramApi"
+
 export type Program = z.infer<typeof ProgramSchema>;
 
 export const columns: ColumnDef<Program>[] = [
@@ -78,8 +80,11 @@ export const columns: ColumnDef<Program>[] = [
                 <>
                     <EditProgramDialog program={program} />
                     <DeleteDialog
-                        itemName={program.program_code + ": " + program.program_name}
-                        onConfirm={() => console.log("Delete program:", program.program_code)}
+                    itemName={`${program.program_code}: ${program.program_name}`}
+                        onConfirm={async () => {
+                        const result = await deleteProgram(program);
+                        return result; // this will be { message: "..."} or { error: "..." }
+                    }}
                     />
                 </>
             )

@@ -12,7 +12,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { BookOpen, Users, Settings, School } from "lucide-react";
 import Image from "next/image";
@@ -20,15 +19,12 @@ import Image from "next/image";
 export function AppSidebar() {
   const { isAuthenticated, loading } = useAuth();
 
-  // Show nothing while loading session
   if (loading) return null;
-
-  // Hide sidebar if not authenticated
   if (!isAuthenticated) return null;
 
   return (
     <Sidebar>
-      {/* ✅ Header with logo + title */}
+      {/* ✅ Header */}
       <SidebarHeader className="bg-primary px-4 py-3">
         <div className="flex items-center gap-3">
           <Image
@@ -49,7 +45,6 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="mt-2 space-y-1">
               <SidebarMenuItem>
-                              <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <a
                     href="/protected/students"
@@ -73,6 +68,7 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
+              <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <a
                     href="/protected/colleges"
@@ -88,7 +84,7 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* ✅ Bottom footer */}
+      {/* ✅ Footer */}
       <SidebarFooter className="bg-sidebarbg px-4 py-3">
         <SidebarMenu>
           <SidebarMenuItem>

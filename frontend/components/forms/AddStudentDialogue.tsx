@@ -66,11 +66,10 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
     try {
       setLoading(true)
       const programData = await getAllPrograms()
-      setPrograms(programData)
-
-      // Auto-select first program if none selected
-      if (programData.length > 0 && !form.getValues().program_code) {
-        form.setValue('program_code', programData[0].program_code)
+      const list = programData || [] // handle both cases
+      setPrograms(list)
+      if (list.length > 0 && !form.getValues().program_code) {
+        form.setValue('program_code', list[0].program_code)
       }
     } catch (error) {
       showToast(`Error fetching programs: ${error}`, 'warning')
@@ -79,12 +78,13 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
     }
   }
 
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       await createStudent(values)
       showToast("Student Added Successfully", 'success')
       setOpen(false)
-      form.reset() // Added form reset
+      form.reset()
     } catch (error) {
       showToast(`Error: ${error}`, 'warning')
     }
@@ -163,8 +163,8 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Program</FormLabel> {/* Changed from College to Program */}
-                  <Select 
-                    onValueChange={field.onChange} 
+                  <Select
+                    onValueChange={field.onChange}
                     defaultValue={field.value}
                     disabled={loading}
                   >
@@ -174,14 +174,18 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {programs.map((program) => (
-                        <SelectItem 
-                          key={program.program_code} // Use program_code as key
-                          value={program.program_code} // Use program_code as value
-                        >
-                          {program.program_code} - {program.program_name}
-                        </SelectItem>
-                      ))}
+                      {
+                      programs
+                        .filter(p => p && p.program_code && p.program_name)
+                        .map(program => (
+                          <SelectItem
+                            key={`${program.program_code}-${program.program_name}`}
+                            value={program.program_code}
+                          >
+                            {program.program_code} - {program.program_name}
+                          </SelectItem>
+                        ))}
+
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -194,8 +198,8 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Year Level</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
+                  <Select
+                    onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
@@ -221,8 +225,8 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Gender</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
+                  <Select
+                    onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>

@@ -84,6 +84,7 @@ export function AddProgramDialog({ label }: AddProgramDialogProps) {
       form.reset()
     } catch (error) {
       showToast(`Error: ${error}`, 'warning')
+      setOpen(false)
     }
   }
 

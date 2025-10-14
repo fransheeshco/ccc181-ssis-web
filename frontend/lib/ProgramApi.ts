@@ -59,22 +59,39 @@ export async function updateProgram(data: updateProgramPayload) {
   }
 }
 
-export async function deleteCollege(data: deleteProgramPayload) {
-  const { program_code } = data
+export async function deleteProgram(
+  data: deleteProgramPayload
+): Promise<{ message?: string; error?: string }> {
+  const { program_code } = data;
+
   try {
-    const res = await axiosInstance.delete<deleteProgramPayload>(`/programs/delete/${program_code}`)
+    const res = await axiosInstance.delete<{ message?: string; error?: string }>(
+      `/programs/delete/${program_code}`
+    );
+
+    return {
+      message: res.data?.message || "✅ Program deleted successfully",
+      error: res.data?.error,
+    };
   } catch (err: any) {
     console.error("API request failed:", err.response?.data || err.message);
-    throw new Error(err.response?.data?.msg || "API request failed");
+
+    // Return a consistent structure instead of throwing
+    return {
+      error: err.response?.data?.error || "❌ Failed to delete program",
+    };
   }
 }
 
 export async function getAllPrograms(): Promise<Program[]> {
   try {
-    const res = await axiosInstance.get<Program[]>("/programs/getprograms");
-    return res.data;
+    const res = await axiosInstance.get("/programs/getprograms");
+    console.log("📡 Raw API response from /programs/getprograms:", res.data);
+    // unwrap the tuple [data, status]
+    const data = Array.isArray(res.data) ? res.data[0] : res.data;
+    return data.programs;
   } catch (err: any) {
     console.error("Failed to fetch all programs:", err.response?.data || err.message);
-    throw new Error(err.response?.data?.msg || "Failed to fetch colleges");
+    throw new Error(err.response?.data?.msg || "Failed to fetch programs");
   }
 }

@@ -37,7 +37,6 @@ export async function createCollege(data: College) {
       college_code,
       college_name,
     });
-
     return res.data; // new college returned from API
   } catch (err: any) {
     console.error("API request failed:", err.response?.data || err.message);
@@ -59,13 +58,14 @@ export async function updateCollege(data: updateCollegePayload) {
   }
 }
 
-export async function deleteCollege(data: deleteCollegePayload) {
-  const { college_code} = data
+export async function deleteCollege(data: deleteCollegePayload): Promise<{ message?: string; error?: string }> {
+  const { college_code } = data;
   try {
-    const res = await axiosInstance.delete<deleteCollegePayload>(`/colleges/delete/${college_code}`)
+    const res = await axiosInstance.delete(`/colleges/delete/${college_code}`);
+    return { message: res.data?.message || "✅ College deleted successfully" };
   } catch (err: any) {
     console.error("API request failed:", err.response?.data || err.message);
-    throw new Error(err.response?.data?.msg || "API request failed");
+    return { error: err.response?.data?.error || "❌ Failed to delete college." };
   }
 }
 

@@ -68,6 +68,7 @@ export function EditProgramDialog({ program }: { program: Program }) {
       setOpen(false)  
     } catch (error) {
       showToast(`Error: ${error}`, 'warning')
+      setOpen(false)
     }
   }
 

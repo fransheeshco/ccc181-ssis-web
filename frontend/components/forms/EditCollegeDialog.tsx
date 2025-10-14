@@ -70,6 +70,7 @@ export function EditCollegeDialogue({ college }: { college: { college_code: stri
             console.log(updated) // ✅ should now show the updated college from backend
         } catch (error) {
             showToast(`Error: ${error}`, 'warning')
+            setOpen(false)
         }
     }
 

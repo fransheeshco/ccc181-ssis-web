@@ -5,7 +5,7 @@ import { createContext, useContext, useState, ReactNode } from "react"
 import { fetchColleges as apiFetchColleges } from "@/lib/CollegeApi"
 import { College } from "@/lib/types/collegeTypes"
 
-type CollegeContextType = {
+export type CollegeContextType = {
   colleges: College[]
   fetchColleges: () => Promise<void>
 }

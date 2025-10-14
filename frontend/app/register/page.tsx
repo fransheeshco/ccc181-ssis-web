@@ -26,8 +26,8 @@ export default function RegisterPage() {
     e.preventDefault();
     try {
       await register(username, email, password);
-      showToast("User created successfully.", "success")
-      router.push("/"); 
+      router.push("/login");
+      showToast("Your account has been created. Please login", "success");
     } catch (err) {
       console.error(err);
     }
@@ -76,7 +76,7 @@ export default function RegisterPage() {
               />
             </div>
             <Button type="submit" disabled={loading}>
-              {loading ? "Creating user..." : "Loading..."}
+              {loading ? "Creating user..." : "Create User"}
             </Button>
           </form>
             <p className="mt-4 text-sm text-center text-gray-600">
