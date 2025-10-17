@@ -86,7 +86,6 @@ export async function deleteProgram(
 export async function getAllPrograms(): Promise<Program[]> {
   try {
     const res = await axiosInstance.get("/programs/getprograms");
-    console.log("📡 Raw API response from /programs/getprograms:", res.data);
     // unwrap the tuple [data, status]
     const data = Array.isArray(res.data) ? res.data[0] : res.data;
     return data.programs;

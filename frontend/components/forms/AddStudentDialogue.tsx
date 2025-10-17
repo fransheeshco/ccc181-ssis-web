@@ -81,12 +81,15 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      await createStudent(values)
-      showToast("Student Added Successfully", 'success')
-      setOpen(false)
-      form.reset()
+      const data = await createStudent(values)
+      if (data) {
+        showToast("Student Added Successfully", 'success')
+        form.reset()
+      } 
     } catch (error) {
       showToast(`Error: ${error}`, 'warning')
+    } finally {
+      setOpen(false)
     }
   }
 
