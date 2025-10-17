@@ -51,7 +51,9 @@ def update_student_controller(new_student_id, new_first_name, new_last_name, new
             new_program_code=new_program_code
         )
         if updated_student is None:
-            return {"error": "Student not found"}, 404
+            return {"message": "❌ Student ID already exists"}, 400
+        if not updated_student:
+            return {"message": f"⚠️ Program '{current_student_id}' not found"}, 404
         return {"message": "Student successfully updated", "student": updated_student}, 200
 
     except psycopg2.IntegrityError as e:
@@ -76,4 +78,4 @@ def delete_student_controller(student_id):
         if e.pgcode == "23503":  # foreign key violation (if students are linked elsewhere)
             return {"error": "❌ Cannot delete student due to foreign key constraint"}, 409
         else:
-            return {"error": "❌ Database integrity error"}, 400
+            return {"error": "❌ Database integrity error"}, 400    

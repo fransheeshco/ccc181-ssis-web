@@ -3,7 +3,7 @@ from app.db import db
 def add_college_model(college_code, college_name):
     with db.get_cursor(commit=True) as cur:
         cur.execute(
-            "SELECT 1 FROM college WHERE college_code = %s;", (college_code,)
+            "SELECT 1 FROM colleges WHERE college_code = %s;", (college_code,)
         )
 
         if cur.fetchone():
@@ -11,7 +11,7 @@ def add_college_model(college_code, college_name):
 
         cur.execute(
            """
-           INSERT INTO college (college_code, college_name) VALUES (%s, %s);
+           INSERT INTO colleges (college_code, college_name) VALUES (%s, %s);
            """,
             (college_code, college_name)
         )
@@ -31,7 +31,7 @@ def get_colleges_model(limit=10, offset=0, search=None, sort_by="college_code", 
         if order.upper() not in valid_orders:
             order = "ASC"
 
-        basequery = "SELECT * FROM college"
+        basequery = "SELECT * FROM colleges"
         params = []
 
         if search:
@@ -54,7 +54,7 @@ def get_colleges_model(limit=10, offset=0, search=None, sort_by="college_code", 
     
 def get_total_colleges_model(search=None):
     with db.get_cursor(commit=False) as cur:
-        query = "SELECT COUNT(*) FROM college"
+        query = "SELECT COUNT(*) FROM colleges"
         params = []
 
         if search:
@@ -65,35 +65,46 @@ def get_total_colleges_model(search=None):
         total_count = cur.fetchone()[0]
         return total_count
 
-def update_college_model(new_college_code=None, new_college_name=None, curr_code=None):
+def update_college_model(current_code, new_code, new_name):
     with db.get_cursor(commit=True) as cur:
-        cur.execute(
-            """
-            UPDATE college
-            SET college_code = COALESCE(%s, college_code),
-                college_name = COALESCE(%s, college_name)
-            WHERE college_code = %s
-            RETURNING college_code, college_name
-            """,
-            (new_college_code, new_college_name, curr_code)
-        )
-        updated = cur.fetchone()
-        if not updated:
-            return None
-        return updated
+        # Check if the target college exists
+        cur.execute("SELECT 1 FROM colleges WHERE college_code = %s;", (current_code,))
+        if not cur.fetchone():
+            return None, "not_found"
 
+        # Check if the new code or name already exist (and not the same record)
+        cur.execute("""
+            SELECT 1 FROM colleges 
+            WHERE (college_code = %s OR college_name = %s)
+              AND college_code != %s;
+        """, (new_code, new_name, current_code))
+
+        if cur.fetchone():
+            return None, "duplicate"
+
+        # Proceed with the update
+        cur.execute("""
+            UPDATE colleges
+            SET college_code = %s, college_name = %s
+            WHERE college_code = %s;
+        """, (new_code, new_name, current_code))
+
+        return {"college_code": new_code, "college_name": new_name}, None
     
 def delete_college_model(college_code):
     with db.get_cursor(commit=True) as cur:
+        # Try deleting and returning row count
         cur.execute(
-            "DELETE FROM college WHERE college_code = %s RETURNING *;", (college_code,)
+            "DELETE FROM colleges WHERE college_code = %s RETURNING *;", 
+            (college_code,)
         )
-        return cur.rowcount
+        deleted_row = cur.fetchone()
+        return deleted_row  # returns None if not found
 
 def get_all_colleges_model():
     with db.get_cursor(commit=False) as cur:
         cur.execute(
-            "SELECT college_code, college_name FROM college ORDER BY college_code"
+            "SELECT college_code, college_name FROM colleges ORDER BY college_code"
         )
         columns = [desc[0] for desc in cur.description]
         colleges = cur.fetchall()

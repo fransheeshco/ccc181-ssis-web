@@ -4,7 +4,6 @@ from flask_jwt_extended import (
     create_access_token, create_refresh_token,
     set_access_cookies, set_refresh_cookies,
     unset_jwt_cookies, jwt_required, get_jwt_identity,
-    get_csrf_token
 )
 
 def register_user_controller(username, email, password):

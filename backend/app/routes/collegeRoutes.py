@@ -43,12 +43,13 @@ def create_college():
     valid_user = get_jwt_identity()
     if valid_user is None:
         return jsonify({"message": "❌ Unauthorized"}), 401
-    
-    data = request.get_json()
 
+    data = request.get_json()
     college_code = data.get("college_code")
     college_name = data.get("college_name")
-    return jsonify(create_college_controller(college_code, college_name))
+
+    response, status = create_college_controller(college_code, college_name)
+    return jsonify(response), status
 
 @college_bp.route("/update/<string:college_code>", methods=["PUT"])
 @jwt_required()
@@ -56,11 +57,16 @@ def update_college_route(college_code):
     valid_user = get_jwt_identity()
     if valid_user is None:
         return jsonify({"message": "❌ Unauthorized"}), 401
-    
+
     data = request.get_json()
-    new_code = data.get("college_code")     
+    new_code = data.get("college_code")
     new_name = data.get("college_name")
-    return jsonify(update_college_controller(new_code, new_name, college_code))
+
+    if not new_code or not new_name:
+        return jsonify({"message": "⚠️ Missing required fields"}), 400
+
+    response, status = update_college_controller(college_code, new_code, new_name)
+    return jsonify(response), status
 
 @college_bp.route('/delete/<string:college_code>', methods=['DELETE'])
 @jwt_required()
@@ -68,8 +74,9 @@ def delete_college(college_code):
     valid_user = get_jwt_identity()
     if valid_user is None:
         return jsonify({"message": "❌ Unauthorized"}), 401
-    
-    return jsonify(delete_college_controller(college_code))
+
+    response, status = delete_college_controller(college_code)
+    return jsonify(response), status
 
 @college_bp.route("/getcolleges", methods=["GET"])  
 @jwt_required()

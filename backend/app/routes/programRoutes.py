@@ -33,46 +33,46 @@ def fetch_programs():
     })
 
 
-@program_bp.route('/create', methods=['POST'])
+@program_bp.route("/create", methods=["POST"])
 @jwt_required()
 def create_program():
     valid_user = get_jwt_identity()
-    if valid_user is None:
+    if not valid_user:
         return jsonify({"message": "❌ Unauthorized"}), 401
-    
+
     data = request.get_json()
+    response, status = create_program_controller(
+        data.get("program_code"),
+        data.get("program_name"),
+        data.get("college_code")
+    )
+    return jsonify(response), status
 
-    program_code = data.get("program_code")
-    program_name = data.get("program_name")
-    college_code = data.get("college_code")
-    return jsonify(create_program_controller(program_code, program_name, college_code))
-
-@program_bp.route('/update/<string:program_code>', methods=['PUT'])
+@program_bp.route("/update/<string:program_code>", methods=["PUT"])
 @jwt_required()
-def patch_program(program_code):
+def update_program(program_code):
     valid_user = get_jwt_identity()
-    if valid_user is None:
+    if not valid_user:
         return jsonify({"message": "❌ Unauthorized"}), 401
-    
+
     data = request.get_json()
+    response, status = update_program_controller(
+        program_code,
+        data.get("program_code"),
+        data.get("program_name"),
+        data.get("college_code")
+    )
+    return jsonify(response), status
 
-    new_program_code = data.get("program_code")
-    new_program_name = data.get("program_name")
-    new_college_code = data.get("college_code")
-
-    return jsonify(update_program_controller(program_code, new_program_code, new_program_name, new_college_code))
-
-@program_bp.route('/delete/<string:program_code>', methods=['DELETE'])
+@program_bp.route("/delete/<string:program_code>", methods=["DELETE"])
 @jwt_required()
 def delete_program(program_code):
     valid_user = get_jwt_identity()
-    if valid_user is None:
+    if not valid_user:
         return jsonify({"message": "❌ Unauthorized"}), 401
-    
-    deleted = delete_program_controller(program_code)
-    if deleted: 
-        return jsonify({"message": "Program deleted", "deleted": dict(deleted)})
-    return jsonify({"error": "Program not found"}), 404
+
+    response, status = delete_program_controller(program_code)
+    return jsonify(response), status
 
 @program_bp.route("/getprograms", methods=["GET"])
 @jwt_required()
