@@ -25,10 +25,11 @@ const formSchema = z.object({
 })
 
 interface AddCollegeDialogueProps {
-  label: string
+  label: string,
+  onSuccess?: () => void
 }
 
-export function AddCollegeDialog({ label }: AddCollegeDialogueProps) {
+export function AddCollegeDialog({ label, onSuccess }: AddCollegeDialogueProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,6 +38,7 @@ export function AddCollegeDialog({ label }: AddCollegeDialogueProps) {
     },
   })
   const [open, setOpen] = useState(false)
+  const [error, setError] = useState("");
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -44,10 +46,10 @@ export function AddCollegeDialog({ label }: AddCollegeDialogueProps) {
       showToast("College Added Successfully.", "success")
       setOpen(false)
       form.reset()
-      await fetchColleges()
-    } catch (error) {
-      showToast(`Error: ${error}`, 'warning')
-      setOpen(false)
+      if (onSuccess) onSuccess() 
+    } catch (err: any) {
+      console.error("API error:", err);
+      setError(err.message || String(err));
     }
   }
 
@@ -67,7 +69,6 @@ export function AddCollegeDialog({ label }: AddCollegeDialogueProps) {
         >
           <Plus className="h-6 w-6 sm:h-5 sm:w-5" />
           <span className="hidden sm:inline">{label}</span>
-          Add College
         </Button>
       </DialogTrigger>
 
@@ -105,6 +106,10 @@ export function AddCollegeDialog({ label }: AddCollegeDialogueProps) {
                 </FormItem>
               )}
             />
+
+            {/* ⚠️ Backend error message */}
+            {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
+
             <DialogFooter>
               <Button type="submit">Submit</Button>
             </DialogFooter>

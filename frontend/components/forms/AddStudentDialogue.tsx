@@ -27,8 +27,10 @@ import {
 import { getAllPrograms } from "@/lib/ProgramApi"
 import { Program } from "@/lib/types/programTypes"
 
+type StudentID = `${number}${number}${number}${number}-${number}${number}${number}${number}`;
+
 const formSchema = z.object({
-  student_id: z.string().min(1),
+  student_id: z.string().regex(/^\d{4}-\d{4}$/, "ID must be in YYYY-NNNN format"),
   first_name: z.string().min(1),
   last_name: z.string().min(1),
   program_code: z.string().min(1),
@@ -37,10 +39,11 @@ const formSchema = z.object({
 })
 
 interface AddStudentDialogProps {
-  label: string
+  label: string,
+  onSuccess?: () => void
 }
 
-export function AddStudentDialog({ label }: AddStudentDialogProps) {
+export function AddStudentDialog({ label, onSuccess }: AddStudentDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,6 +58,7 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
   const [open, setOpen] = useState(false)
   const [programs, setPrograms] = useState<Program[]>([])
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
   useEffect(() => {
     if (open) {
@@ -81,15 +85,14 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const data = await createStudent(values)
-      if (data) {
-        showToast("Student Added Successfully", 'success')
-        form.reset()
-      } 
-    } catch (error) {
-      showToast(`Error: ${error}`, 'warning')
-    } finally {
+      const response = await createStudent(values)
+      showToast("Student added successfully.")
       setOpen(false)
+      form.reset()
+      if (onSuccess) onSuccess() 
+    } catch (err: any) {
+      console.error("API error:", err);
+      setError(err.message || String(err));
     }
   }
 
@@ -108,7 +111,6 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
           "
         >
           <Plus className="h-6 w-6 sm:h-5 sm:w-5" />
-          Add Student
           <span className="hidden sm:inline">{label}</span>
         </Button>
       </DialogTrigger>
@@ -178,16 +180,16 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
                     </FormControl>
                     <SelectContent>
                       {
-                      programs
-                        .filter(p => p && p.program_code && p.program_name)
-                        .map(program => (
-                          <SelectItem
-                            key={`${program.program_code}-${program.program_name}`}
-                            value={program.program_code}
-                          >
-                            {program.program_code} - {program.program_name}
-                          </SelectItem>
-                        ))}
+                        programs
+                          .filter(p => p && p.program_code && p.program_name)
+                          .map(program => (
+                            <SelectItem
+                              key={`${program.program_code}-${program.program_name}`}
+                              value={program.program_code}
+                            >
+                              {program.program_code} - {program.program_name}
+                            </SelectItem>
+                          ))}
 
                     </SelectContent>
                   </Select>
@@ -247,6 +249,7 @@ export function AddStudentDialog({ label }: AddStudentDialogProps) {
                 </FormItem>
               )}
             />
+            {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
             <DialogFooter>
               <Button type="submit" disabled={loading}>
                 Submit

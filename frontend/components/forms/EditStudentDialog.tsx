@@ -7,55 +7,45 @@ import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { getAllPrograms } from "@/lib/ProgramApi"
 import { Program } from "@/lib/types/programTypes"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogTrigger,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger,
 } from "@/components/ui/dialog"
 import { Edit } from "lucide-react"
 import { updateStudent } from "@/lib/StudentApi"
 import { showToast } from "@/lib/toast"
 
-// ✅ Validation Schema
 const formSchema = z.object({
-  student_id: z.string().min(1, "Student ID is required"),
-  first_name: z.string().min(1, "First name is required"),
-  last_name: z.string().min(1, "Last name is required"),
-  program_code: z.string().min(1, "Program is required"),
-  year_level: z.string().min(1, "Year level is required"),
-  gender: z.string().min(1, "Gender is required"),
+  student_id: z.string().regex(/^\d{4}-\d{4}$/, "ID must be in YYYY-NNNN format"),
+  first_name: z.string().min(1),
+  last_name: z.string().min(1),
+  program_code: z.string().min(1),
+  year_level: z.string().min(1),
+  gender: z.string().min(1),
 })
 
-type Student = z.infer<typeof formSchema>
+type StudentForm = z.infer<typeof formSchema>
 
-export function EditStudentDialog({ student }: { student: Student }) {
+interface EditStudentDialogProps {
+  student: StudentForm
+  onSuccess?: () => void // ✅ parent refetch
+}
+
+export function EditStudentDialog({ student, onSuccess }: EditStudentDialogProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [programs, setPrograms] = useState<Program[]>([])
+  const [error, setError] = useState("")
 
-  const form = useForm<Student>({
+  const form = useForm<StudentForm>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       student_id: "",
@@ -69,9 +59,7 @@ export function EditStudentDialog({ student }: { student: Student }) {
 
   // ✅ Fetch programs when dialog opens
   useEffect(() => {
-    if (open) {
-      fetchPrograms()
-    }
+    if (open) fetchPrograms()
   }, [open])
 
   async function fetchPrograms() {
@@ -86,7 +74,7 @@ export function EditStudentDialog({ student }: { student: Student }) {
     }
   }
 
-  // ✅ Reset form with current student data when dialog opens
+  // ✅ Reset form when student changes or dialog opens
   useEffect(() => {
     if (student && open) {
       form.reset({
@@ -100,22 +88,20 @@ export function EditStudentDialog({ student }: { student: Student }) {
     }
   }, [student, open, form])
 
-  // ✅ Submit handler
-  async function onSubmit(values: Student) {
+  async function onSubmit(values: StudentForm) {
     try {
       await updateStudent({
         ...values,
-        curr_code: student.student_id, // preserve original ID for backend
+        curr_code: student.student_id,
       })
-      showToast("✅ Student Edited Successfully.", "success")
+      showToast("Student edited successfully.", "success")
       setOpen(false)
-    } catch (error) {
-      showToast(`Error: ${error}`, "warning")
-      setOpen(false)
+      if (onSuccess) onSuccess() // ✅ trigger parent refetch
+    } catch (err: any) {
+      setError(err.message || String(err))
     }
   }
 
-  // ✅ UI
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild className="m-2">
@@ -132,118 +118,70 @@ export function EditStudentDialog({ student }: { student: Student }) {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="student_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>ID Number</FormLabel>
+            <FormField control={form.control} name="student_id" render={({ field }) => (
+              <FormItem>
+                <FormLabel>ID Number</FormLabel>
+                <FormControl><Input placeholder="Enter ID number" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+            <FormField control={form.control} name="first_name" render={({ field }) => (
+              <FormItem>
+                <FormLabel>First Name</FormLabel>
+                <FormControl><Input placeholder="Enter first name" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+            <FormField control={form.control} name="last_name" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Last Name</FormLabel>
+                <FormControl><Input placeholder="Enter last name" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+            <FormField control={form.control} name="program_code" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Program</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value} disabled={loading}>
                   <FormControl>
-                    <Input placeholder="Enter ID number" {...field} />
+                    <SelectTrigger>
+                      <SelectValue placeholder={loading ? "Loading programs..." : "Select a program"} />
+                    </SelectTrigger>
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                  <SelectContent>
+                    {programs.map((program) => (
+                      <SelectItem key={program.program_code} value={program.program_code}>
+                        {program.program_code} - {program.program_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )} />
 
-            <FormField
-              control={form.control}
-              name="first_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First Name</FormLabel>
-                  <FormControl>
-                    <Input type="text" placeholder="Enter first name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <FormField control={form.control} name="year_level" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Year Level</FormLabel>
+                <FormControl><Input placeholder="Enter year level" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
 
-            <FormField
-              control={form.control}
-              name="last_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Last Name</FormLabel>
-                  <FormControl>
-                    <Input type="text" placeholder="Enter last name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <FormField control={form.control} name="gender" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Gender</FormLabel>
+                <FormControl><Input placeholder="Enter gender" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
 
-            <FormField
-              control={form.control}
-              name="program_code"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Program</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    disabled={loading}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={
-                            loading ? "Loading programs..." : "Select a program"
-                          }
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {programs
-                        .filter((p) => p && p.program_code && p.program_name)
-                        .map((program) => (
-                          <SelectItem
-                            key={`${program.program_code}-${program.program_name}`}
-                            value={program.program_code}
-                          >
-                            {program.program_code} - {program.program_name}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="year_level"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Year Level</FormLabel>
-                  <FormControl>
-                    <Input type="text" placeholder="Enter year level" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="gender"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Gender</FormLabel>
-                  <FormControl>
-                    <Input type="text" placeholder="Enter gender" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
+            {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
             <DialogFooter>
-              <Button type="submit" disabled={loading}>
-                Submit
-              </Button>
+              <Button type="submit" disabled={loading}>Submit</Button>
             </DialogFooter>
           </form>
         </Form>

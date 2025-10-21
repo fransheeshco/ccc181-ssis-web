@@ -18,7 +18,7 @@ import { deleteProgram } from "@/lib/ProgramApi"
 
 export type Program = z.infer<typeof ProgramSchema>;
 
-export const columns: ColumnDef<Program>[] = [
+export const columns = (fetchData: () => void): ColumnDef<Program>[] => [
     {
         accessorKey: "program_code",
         header: ({ column }) => {
@@ -78,13 +78,14 @@ export const columns: ColumnDef<Program>[] = [
 
             return (
                 <>
-                    <EditProgramDialog program={program} />
+                    <EditProgramDialog program={program} onSuccess={fetchData} />
                     <DeleteDialog
-                    itemName={`${program.program_code}: ${program.program_name}`}
+                        itemName={`${program.program_code}: ${program.program_name}`}
                         onConfirm={async () => {
-                        const result = await deleteProgram(program);
-                        return result; // this will be { message: "..."} or { error: "..." }
-                    }}
+                            const result = await deleteProgram(program);
+                            return result; // this will be { message: "..."} or { error: "..." }
+                        }}
+                        onSuccess={fetchData}
                     />
                 </>
             )

@@ -19,8 +19,7 @@ export async function fetchStudents(filters: studentFilters = {}): Promise<fetch
   }
 }
 
-
-export async function createStudent(data: Student): Promise<{ message?: string; error?: string }> {
+export async function createStudent(data: Student) {
   const { student_id, first_name, last_name, program_code, year_level, gender } = data;
 
   try {
@@ -35,10 +34,19 @@ export async function createStudent(data: Student): Promise<{ message?: string; 
 
     return { message: res.data?.message || "✅ Student created successfully" };
   } catch (err: any) {
-  console.error("API request failed:", err.response?.data || err.message);
-  const backendError = err.response?.data?.error || err.response?.data?.message || "❌ Something went wrong";
-  return { error: backendError };
-}
+    const backendMessage =
+      err.response?.data?.message ||  // Flask returns { message: "..." }
+      err.response?.data?.error ||    // sometimes { error: "..." }
+      err.message || 
+      "API request failed";
+
+    console.error("API request failed:", backendMessage);
+    throw new Error(
+      err.response?.data?.error ||
+      err.response?.data?.message ||
+      "API request failed"
+    );
+  }
 }
 
 
@@ -59,10 +67,19 @@ export async function updateStudent(
 
     return { message: res.data?.message || "✅ Student updated successfully" };
   } catch (err: any) {
-  console.error("API request failed:", err.response?.data || err.message);
-  const backendError = err.response?.data?.error || err.response?.data?.message || "❌ Something went wrong";
-  return { error: backendError };
-}
+    const backendMessage =
+      err.response?.data?.message ||  // Flask returns { message: "..." }
+      err.response?.data?.error ||    // sometimes { error: "..." }
+      err.message || 
+      "API request failed";
+
+    console.error("API request failed:", backendMessage);
+    throw new Error(
+      err.response?.data?.error ||
+      err.response?.data?.message ||
+      "API request failed"
+    );
+  }
 }
 
 export async function deleteStudent(
@@ -79,11 +96,17 @@ export async function deleteStudent(
     if (res.data?.error) {
       return { error: res.data.error };
     }
-    return { message: res.data?.message || "✅ Student deleted successfully" };
+    return {
+      message: res.data?.message || "✅ Student deleted successfully",
+      error: res.data?.error,
+    };
   } catch (err: any) {
-  console.error("API request failed:", err.response?.data || err.message);
-  const backendError = err.response?.data?.error || err.response?.data?.message || "❌ Something went wrong";
-  return { error: backendError };
-}
+    console.error("API request failed:", err.response?.data || err.message);
+
+    // Return a consistent structure instead of throwing
+    return {
+      error: err.response?.data?.error || "❌ Failed to delete program",
+    };
+  }
 }
 

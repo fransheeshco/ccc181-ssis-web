@@ -56,7 +56,7 @@ export default function StudentClient() {
   return (
     <StudentProvider>
       <DataTable
-        columns={columns}
+        columns={columns(loadData)}
         data={data}
         total={total}
         pageIndex={pageIndex}
@@ -69,7 +69,13 @@ export default function StudentClient() {
         }}
         onPageChange={handlePageChange}
         actions={[
-          { Component: AddStudentDialog },
+          {
+            Component: AddStudentDialog,
+            props: {
+                  label: "Add College",
+                  onSuccess: () => loadData(pageIndex * pageSize),
+                }
+              },
         ]}
       />
     </StudentProvider>

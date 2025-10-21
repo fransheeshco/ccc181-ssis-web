@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import * as React from "react"
 import { DataTable } from "@/components/ui/data-table"
 import { fetchColleges } from "@/lib/CollegeApi"
@@ -19,7 +19,8 @@ export default function CollegesClient() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
 
-  const loadData = async (offset = 0) => {
+  // ✅ useCallback prevents stale closures and re-renders
+  const loadData = useCallback(async (offset = 0) => {
     setLoading(true)
     try {
       const sortBy = sorting[0]?.id || "college_name"
@@ -35,37 +36,23 @@ export default function CollegesClient() {
 
       setData(result.colleges.rows || [])
       setTotal(result.colleges.total)
-      setSearch(search)
     } catch (error) {
       console.error("Failed to load colleges:", error)
     } finally {
       setLoading(false)
     }
-  }
+  }, [sorting, search, pageSize])
 
   useEffect(() => {
     loadData(pageIndex * pageSize)
-  }, [pageIndex, sorting, search]) // 👈 re-fetch on page or sorting change
-
-  const handlePageChange = (newPage: number) => {
-    setPageIndex(newPage) // 👈 let useEffect trigger the load
-  }
-
-  const handleSearch = async (query: string) => {
-    try {
-      const result = await fetchColleges({ search: query }) 
-      setData(result.colleges.rows)
-    } catch (error) {
-      console.error("Failed to load colleges:", error)
-    }
-  }
+  }, [pageIndex, sorting, search, loadData])
 
   if (loading) return <div>Loading colleges...</div>
 
   return (
     <CollegeProvider>
       <DataTable
-        columns={columns}
+        columns={columns(() => loadData(pageIndex * pageSize))}  // ✅ Pass correct refetch
         data={data}
         total={total}
         pageIndex={pageIndex}
@@ -73,12 +60,18 @@ export default function CollegesClient() {
         sorting={sorting}
         onSortingChange={setSorting}
         onSearch={(q) => {
-          setPageIndex(0) // reset to first page
+          setPageIndex(0)
           setSearch(q)
         }}
-        onPageChange={handlePageChange}
+        onPageChange={(newPage) => setPageIndex(newPage)}
         actions={[
-          { Component: AddCollegeDialog },
+          {
+            Component: AddCollegeDialog,
+            props: {
+              label: "Add College",
+              onSuccess: () => loadData(pageIndex * pageSize),
+            },
+          },
         ]}
       />
     </CollegeProvider>

@@ -34,13 +34,15 @@ const formSchema = z.object({
 })
 
 interface AddProgramDialogProps {
-  label: string
+  label: string,
+  onSuccess?: () => void
 }
 
-export function AddProgramDialog({ label }: AddProgramDialogProps) {
+export function AddProgramDialog({ label, onSuccess }: AddProgramDialogProps) {
   const [colleges, setColleges] = useState<College[]>([])
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
+  const [error, setError] = useState("")
 
   // Fetch colleges when dialog opens
   useEffect(() => {
@@ -75,16 +77,16 @@ export function AddProgramDialog({ label }: AddProgramDialogProps) {
     }
   }
 
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       await createProgram(values)
       showToast("Program Added Successfully", 'success')
       setOpen(false)
       form.reset()
-    } catch (error) {
-      showToast(`Error: ${error}`, 'warning')
-      setOpen(false)
+      if (onSuccess) onSuccess() 
+    } catch (err: any) {
+      console.error("API error:", err);
+      setError(err.message || String(err));
     }
   }
 
@@ -103,7 +105,6 @@ export function AddProgramDialog({ label }: AddProgramDialogProps) {
           "
         >
           <Plus className="h-6 w-6 sm:h-5 sm:w-5" />
-          Add Program
           <span className="hidden sm:inline">{label}</span>
         </Button>
       </DialogTrigger>
@@ -173,6 +174,8 @@ export function AddProgramDialog({ label }: AddProgramDialogProps) {
                 </FormItem>
               )}
             />
+
+            {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
             <DialogFooter>
               <Button type="submit">Submit</Button>
             </DialogFooter>

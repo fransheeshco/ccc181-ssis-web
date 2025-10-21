@@ -17,24 +17,26 @@ import { Trash } from "lucide-react"
 interface DeleteDialogProps {
   onConfirm: () => Promise<{ error?: string; message?: string }> | void
   itemName?: string
+  onSuccess?: () => void
 }
 
-export function DeleteDialog({ onConfirm, itemName }: DeleteDialogProps) {
+export function DeleteDialog({ onConfirm, itemName, onSuccess }: DeleteDialogProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-
+  
   const handleDelete = async () => {
     setLoading(true)
     try {
-      const result = await onConfirm() // await response from delete API
+      const result = await onConfirm()
       console.log(result)
-      
-      if (result && "error" in result) {
-        showToast(result.error || "❌ Failed to delete item.")
-      } else {
-        showToast(result?.message || "✅ Successfully deleted.")
-        setOpen(false)
-      }
+
+    if (result?.error) {
+      showToast(result.error || "Failed to delete item.")
+    } else {
+      showToast(result?.message || "✅ Successfully deleted.")
+      setOpen(false)
+      onSuccess?.() // ✅ trigger parent refetch
+    }
     } catch (err) {
       console.error("DeleteDialog error:", err)
       showToast("❌ An unexpected error occurred.")

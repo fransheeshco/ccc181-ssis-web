@@ -2,22 +2,32 @@ from app.db import db
 
 def add_college_model(college_code, college_name):
     with db.get_cursor(commit=True) as cur:
+        # Check for duplicate college code
         cur.execute(
             "SELECT 1 FROM colleges WHERE college_code = %s;", (college_code,)
         )
-
         if cur.fetchone():
-            return None
+            return {"error": "College Code already exists"}
 
+        # Check for duplicate college name
         cur.execute(
-           """
-           INSERT INTO colleges (college_code, college_name) VALUES (%s, %s);
-           """,
-            (college_code, college_name)
+            "SELECT 1 FROM colleges WHERE college_name = %s;", (college_name,)
         )
+        if cur.fetchone():
+            return {"error": "College Name already exists"}
+
+        # Insert new record
+        cur.execute(
+            """
+            INSERT INTO colleges (college_code, college_name)
+            VALUES (%s, %s);
+            """,
+            (college_code, college_name),
+        )
+
         return {
             "college_code": college_code,
-            "college_name": college_name
+            "college_name": college_name,
         }
 
 def get_colleges_model(limit=10, offset=0, search=None, sort_by="college_code", order="ASC"):
@@ -67,30 +77,39 @@ def get_total_colleges_model(search=None):
 
 def update_college_model(current_code, new_code, new_name):
     with db.get_cursor(commit=True) as cur:
-        # Check if the target college exists
+        # 1️⃣ Check if the college we want to update exists
         cur.execute("SELECT 1 FROM colleges WHERE college_code = %s;", (current_code,))
         if not cur.fetchone():
-            return None, "not_found"
+            return {"error": "College not found"}
 
-        # Check if the new code or name already exist (and not the same record)
-        cur.execute("""
-            SELECT 1 FROM colleges 
-            WHERE (college_code = %s OR college_name = %s)
-              AND college_code != %s;
-        """, (new_code, new_name, current_code))
-
+        # 2️⃣ Check if the new college code is already used by another record
+        cur.execute(
+            "SELECT 1 FROM colleges WHERE college_code = %s AND college_code != %s;",
+            (new_code, current_code)
+        )
         if cur.fetchone():
-            return None, "duplicate"
+            return {"error": "College Code already exists"}
 
-        # Proceed with the update
+        # 3️⃣ Check if the new college name is already used by another record
+        cur.execute(
+            "SELECT 1 FROM colleges WHERE college_name = %s AND college_code != %s;",
+            (new_name, current_code)
+        )
+        if cur.fetchone():
+            return {"error": "College Name already exists"}
+
+        # 4️⃣ Proceed with the update
         cur.execute("""
             UPDATE colleges
             SET college_code = %s, college_name = %s
             WHERE college_code = %s;
         """, (new_code, new_name, current_code))
 
-        return {"college_code": new_code, "college_name": new_name}, None
-    
+        return {
+            "college_code": new_code,
+            "college_name": new_name
+        }
+
 def delete_college_model(college_code):
     with db.get_cursor(commit=True) as cur:
         # Try deleting and returning row count

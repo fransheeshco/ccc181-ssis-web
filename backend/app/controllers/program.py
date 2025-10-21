@@ -6,10 +6,10 @@ from app.models.program import (
 
 def create_program_controller(program_code, program_name, college_code):
     try:
-        new_program = add_programs_model(program_code, program_name, college_code)
-        if not new_program:
-            return {"message": "❌ Program already exists"}, 400
-        return {"message": "✅ Program created successfully", "program": new_program}, 201
+        result = add_programs_model(program_code, program_name, college_code)
+        if "error" in result:
+            return result, 400
+        return {"message": "✅ Program added successfully"}, 201
     except Exception as e:
         print(f"Error creating program: {e}")
         return {"message": "⚠️ Internal server error"}, 500
@@ -27,14 +27,13 @@ def fetch_programs_controller(limit=10, offset=0, search=None, sort_by="program_
 
 def update_program_controller(current_program_code, new_program_code, new_program_name, new_college_code):
     try:
-        updated_program = update_programs_model(current_program_code, new_program_code, new_program_name, new_college_code)
+        result = update_programs_model(current_program_code, new_program_code, new_program_name, new_college_code)
 
-        if updated_program is None:
-            return {"message": "❌ Program code already exists"}, 400
-        if not updated_program:
-            return {"message": f"⚠️ Program '{current_program_code}' not found"}, 404
-
-        return {"message": "✅ Program updated successfully", "program": updated_program}, 200
+        if "error" in result:
+            return result, 400
+        
+        return {"message": "✅ Program updated successfully"}, 200
+    
     except Exception as e:
         print(f"Error updating program: {e}")
         return {"message": "⚠️ Internal server error"}, 500

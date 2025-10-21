@@ -19,6 +19,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { login, loading } = useAuth();
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,8 +27,9 @@ export default function LoginPage() {
     try {
       await login(email, password);
       router.push("/protected/settings");
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      console.error("API error:", err);
+      setError(err.message || String(err));
     }
   };
 
@@ -62,6 +64,7 @@ export default function LoginPage() {
                 required
               />
             </div>
+            {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
             <Button type="submit" disabled={loading}>
               {loading ? "Logging in..." : "Login"}
             </Button>

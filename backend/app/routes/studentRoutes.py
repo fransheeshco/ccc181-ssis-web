@@ -44,14 +44,16 @@ def create_student():
     
     data = request.get_json()
 
-    student_id = data.get("student_id")
-    first_name = data.get("first_name")
-    last_name = data.get("last_name")
-    year_level = data.get("year_level")
-    gender = data.get("gender")
-    program_code = data.get("program_code")
+    response, status = create_student_controller(
+        data.get("student_id"),
+        data.get("first_name"),
+        data.get("last_name"),
+        data.get("year_level"),
+        data.get("gender"),
+        data.get("program_code")
+    )
     
-    return jsonify(create_student_controller(student_id, first_name, last_name, year_level, gender, program_code))
+    return jsonify(response), status
 
 
 @student_bp.route('/update/<string:student_id>', methods=['PUT'])
@@ -63,22 +65,12 @@ def update_student(student_id):
     
     data = request.get_json()
 
-    new_student_id = data.get("student_id")
-    new_first_name = data.get("first_name")
-    new_last_name = data.get("last_name")
-    new_year_level = data.get("year_level")
-    new_gender = data.get("gender")
-    new_program_code = data.get("program_code")
-
-    updated = update_student_controller(
-        new_student_id, new_first_name, new_last_name,
-        new_year_level, new_gender, new_program_code, student_id
+    response, status = update_student_controller(
+        data.get("student_id"), data.get("first_name"), data.get("last_name"),
+        data.get("year_level"), data.get("gender"), data.get("program_code"), student_id
     )
 
-    if updated is None:
-        return jsonify({"error": "Student not found"}), 404
-
-    return jsonify(updated)
+    return jsonify(response), status
 
 @student_bp.route('/delete/<string:student_id>', methods=['DELETE'])
 @jwt_required()

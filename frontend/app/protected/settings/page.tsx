@@ -1,45 +1,30 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import axios from "axios"
 import { SettingsCard } from "@/components/ui/settings-card"
-import { cookies } from 'next/headers'
-import axios from 'axios'
 
-async function getCurrentUser() {
-  try {
-    const cookieStore = await cookies()
-    const cookieString = cookieStore.getAll()
-      .map(cookie => `${cookie.name}=${cookie.value}`)
-      .join('; ')
+export default function SettingsPage() {
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
 
-    const response = await axios.get("http://localhost:8000/api/users/me", {
-      headers: {
-        "Content-Type": "application/json",
-        "Cookie": cookieString
-      },
-      withCredentials: true
-    })
-
-    return response.data.user
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error("Failed to fetch user:", error.response?.data || error.message)
-    } else {
-      console.error("Failed to fetch user:", error)
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get("/api/users/me", { withCredentials: true })
+        setUser(res.data.user)
+      } catch (error) {
+        console.error("Failed to fetch user:", error)
+      } finally {
+        setLoading(false)
+      }
     }
-    return null
-  }
-}
 
-export default async function SettingsPage() {
-  const user = await getCurrentUser()
+    fetchUser()
+  }, [])
 
-  if (!user) {
-    return (
-      <div className="container max-w-2xl py-8 mx-auto">
-        <div className="text-center text-gray-500">
-          Please log in to view settings
-        </div>
-      </div>
-    )
-  }
+  if (loading) return <div className="text-center text-gray-500">Loading...</div>
+  if (!user) return <div className="text-center text-gray-500">Please log in to view settings</div>
 
   return (
     <div className="container max-w-2xl py-8 mx-auto">

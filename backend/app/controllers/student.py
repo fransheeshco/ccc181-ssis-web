@@ -18,7 +18,7 @@ def fetch_students_controller(limit=10, offset=0, search=None, sort_by="student_
 
 def create_student_controller(student_id, first_name, last_name, year_level, gender, program_code):
     try:
-        new_student = create_student_model(
+        result = create_student_model(
             student_id=student_id,
             first_name=first_name,
             last_name=last_name,
@@ -26,22 +26,18 @@ def create_student_controller(student_id, first_name, last_name, year_level, gen
             gender=gender,
             program_code=program_code
         )
-        return {"message": "✅ Student created successfully", "student": new_student}, 201
+        if "error" in result:
+            return result, 400
+        return {"message": "✅ Student added successfully"}, 200
 
-    except psycopg2.IntegrityError as e:
-        if e.pgcode == "23505":  # unique violation
-            return {"error": "❌ Student ID already exists"}, 409
-        elif e.pgcode == "23503":  # foreign key violation
-            return {"error": "❌ Invalid program code"}, 400
-        elif e.pgcode == "23502":  # not null violation
-            return {"error": "❌ Missing required field"}, 400
-        else:
-            return {"error": "❌ Database integrity error"}, 400
+    except Exception as e:
+        print(f"Error updating program: {e}")
+        return {"message": "⚠️ Internal server error"}, 500
 
 
 def update_student_controller(new_student_id, new_first_name, new_last_name, new_year_level, new_gender, new_program_code, current_student_id):
     try:
-        updated_student = update_student_model(
+        result = update_student_model(
             current_student_id=current_student_id,
             new_student_id=new_student_id,
             new_first_name=new_first_name,
@@ -50,21 +46,14 @@ def update_student_controller(new_student_id, new_first_name, new_last_name, new
             new_gender=new_gender,
             new_program_code=new_program_code
         )
-        if updated_student is None:
-            return {"message": "❌ Student ID already exists"}, 400
-        if not updated_student:
-            return {"message": f"⚠️ Program '{current_student_id}' not found"}, 404
-        return {"message": "Student successfully updated", "student": updated_student}, 200
+        if "error" in result:
+            return result, 400
+        
+        return {"message": "✅ Student updated successfully"}, 200
 
-    except psycopg2.IntegrityError as e:
-        if e.pgcode == "23505":
-            return {"error": "❌ Student ID already exists"}, 409
-        elif e.pgcode == "23503":
-            return {"error": "❌ Invalid program code"}, 400
-        elif e.pgcode == "23502":
-            return {"error": "❌ Missing required field"}, 400
-        else:
-            return {"error": "❌ Database integrity error"}, 400
+    except Exception as e:
+        print(f"Error updating program: {e}")
+        return {"message": "⚠️ Internal server error"}, 500
 
 
 def delete_student_controller(student_id):

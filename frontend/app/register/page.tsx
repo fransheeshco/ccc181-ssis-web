@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LogIn } from "lucide-react";
 import { showToast } from "@/lib/toast";
+import Link from "next/link"; 
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -80,7 +81,7 @@ export default function RegisterPage() {
             </Button>
           </form>
             <p className="mt-4 text-sm text-center text-gray-600">
-                Already have an account? <a href="/login" className="text-blue-600 hover:underline">Log in here</a>
+                Already have an account? <Link href="/login" className="text-blue-600 hover:underline">Log in here</Link>
             </p>
         </CardContent>
       </Card>

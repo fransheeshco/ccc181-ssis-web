@@ -41,8 +41,18 @@ export async function createProgram(data: Program) {
 
     return res.data; // new college returned from API
   } catch (err: any) {
-    console.error("API request failed:", err.response?.data || err.message);
-    throw new Error(err.response?.data?.msg || "API request failed");
+    const backendMessage =
+      err.response?.data?.message ||  // Flask returns { message: "..." }
+      err.response?.data?.error ||    // sometimes { error: "..." }
+      err.message || 
+      "API request failed";
+
+    console.error("API request failed:", backendMessage);
+    throw new Error(
+      err.response?.data?.error ||
+      err.response?.data?.message ||
+      "API request failed"
+    );
   }
 }
 
@@ -54,8 +64,18 @@ export async function updateProgram(data: updateProgramPayload) {
       program_code, program_name, college_code
     })
   } catch (err: any) {
-    console.error("API request failed:", err.response?.data || err.message);
-    throw new Error(err.response?.data?.msg || "API request failed");
+    const backendMessage =
+      err.response?.data?.message ||  // Flask returns { message: "..." }
+      err.response?.data?.error ||    // sometimes { error: "..." }
+      err.message || 
+      "API request failed";
+
+    console.error("API request failed:", backendMessage);
+    throw new Error(
+      err.response?.data?.error ||
+      err.response?.data?.message ||
+      "API request failed"
+    );
   }
 }
 

@@ -7,16 +7,17 @@ from app.models.college import (
 
 def create_college_controller(college_code, college_name):
     try:
-        new_college = add_college_model(college_code, college_name)
-        if not new_college:
-            return {"message": "❌ College already exists"}, 400
+        result = add_college_model(college_code, college_name)
+
+        # If model returned an error, pass it along
+        if "error" in result:
+            return result, 400
 
         return {"message": "✅ College added successfully"}, 201
 
     except Exception as e:
-        # You can log the error here
         print(f"Error creating college: {e}")
-        return {"message": "⚠️ Internal server error"}, 500
+        return {"error": "⚠️ Internal server error"}, 500
 
 def fetch_college_controller(limit=10, offset=0, search=None, sort_by="college_code", order="ASC"):
     try:
@@ -38,14 +39,10 @@ def get_total_colleges_controller(search=None):
 
 def update_college_controller(current_code, new_code, new_name):
     try:
-        result, error = update_college_model(current_code, new_code, new_name)
+        result = update_college_model(current_code, new_code, new_name)
 
-        if error == "not_found":
-            return {"message": "❌ College not found"}, 404
-        if error == "duplicate":
-            return {"message": "⚠️ College code or name already exists"}, 400
-        if not result:
-            return {"message": "⚠️ Failed to update college"}, 400
+        if "error" in result:
+            return result, 400
 
         return {"message": "✅ College updated successfully"}, 200
 

@@ -23,7 +23,7 @@ export const studentSchema = z.object(
 
 export type Student = z.infer<typeof studentSchema>;
 
-export const columns: ColumnDef<Student>[] = [
+export const columns = (fetchData: () => void): ColumnDef<Student>[] => [
     {
         accessorKey: "student_id",
         header: ({ column }) => {
@@ -134,13 +134,14 @@ export const columns: ColumnDef<Student>[] = [
 
             return (
                 <>
-                    <EditStudentDialog student={student} />
+                    <EditStudentDialog student={student} onSuccess={fetchData} />
                     <DeleteDialog
-                        itemName={`${student.student_id}: ${student.student_id}`}
-                            onConfirm={async () => {
+                        itemName={`${student.student_id}: ${student.last_name}`}
+                        onConfirm={async () => {
                             const result = await deleteStudent(student);
-                            return result; 
-                    }}
+                            return result;
+                        }}
+                        onSuccess={fetchData}
                     />
                 </>
             )

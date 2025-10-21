@@ -56,7 +56,7 @@ export default function ProgramClient() {
   return (
     <ProgramProvider>
       <DataTable
-        columns={columns}
+        columns={columns(loadData)}
         data={data}
         total={total}
         pageIndex={pageIndex}
@@ -69,7 +69,13 @@ export default function ProgramClient() {
         }}
         onPageChange={handlePageChange}
         actions={[
-          { Component: AddProgramDialog },
+          {
+            Component: AddProgramDialog ,
+            props: {
+                label: "Add College",
+                onSuccess: () => loadData(pageIndex * pageSize),
+              },
+          }
         ]}
       />
     </ProgramProvider>
