@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "🔥 Setting up backend environment..."
-cd backend
+cd oracle
 
 if ! command -v pipenv &> /dev/null; then
   echo "📦 Installing Pipenv..."
