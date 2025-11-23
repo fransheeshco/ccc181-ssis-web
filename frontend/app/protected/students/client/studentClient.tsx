@@ -72,7 +72,7 @@ export default function StudentClient() {
           {
             Component: AddStudentDialog,
             props: {
-                  label: "Add College",
+                  label: "Add Student",
                   onSuccess: () => loadData(pageIndex * pageSize),
                 }
               },

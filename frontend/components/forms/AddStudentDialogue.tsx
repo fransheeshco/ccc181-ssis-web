@@ -55,6 +55,7 @@ export function AddStudentDialog({ label, onSuccess }: AddStudentDialogProps) {
       gender: "",
     },
   })
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [open, setOpen] = useState(false)
   const [programs, setPrograms] = useState<Program[]>([])
   const [loading, setLoading] = useState(false)
@@ -85,11 +86,11 @@ export function AddStudentDialog({ label, onSuccess }: AddStudentDialogProps) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const response = await createStudent(values)
+      const response = await createStudent(values, photoFile ?? undefined)
       showToast("Student added successfully.")
       setOpen(false)
       form.reset()
-      if (onSuccess) onSuccess() 
+      if (onSuccess) onSuccess()
     } catch (err: any) {
       console.error("API error:", err);
       setError(err.message || String(err));
@@ -123,6 +124,17 @@ export function AddStudentDialog({ label, onSuccess }: AddStudentDialogProps) {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="mb-2">
+              <FormLabel>Photo</FormLabel>
+              <FormControl>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setPhotoFile(e.target.files?.[0] || null)}
+                />
+              </FormControl>
+            </div>
+
             <FormField
               control={form.control}
               name="student_id"

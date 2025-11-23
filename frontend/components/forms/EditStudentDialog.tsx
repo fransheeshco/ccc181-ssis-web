@@ -40,6 +40,7 @@ interface EditStudentDialogProps {
 }
 
 export function EditStudentDialog({ student, onSuccess }: EditStudentDialogProps) {
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [programs, setPrograms] = useState<Program[]>([])
@@ -118,6 +119,17 @@ export function EditStudentDialog({ student, onSuccess }: EditStudentDialogProps
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                       <div className="mb-2">
+              <FormLabel>Photo</FormLabel>
+              <FormControl>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setPhotoFile(e.target.files?.[0] || null)}
+                />
+              </FormControl>
+            </div>
+
             <FormField control={form.control} name="student_id" render={({ field }) => (
               <FormItem>
                 <FormLabel>ID Number</FormLabel>

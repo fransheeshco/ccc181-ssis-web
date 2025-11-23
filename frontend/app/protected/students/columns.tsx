@@ -25,6 +25,19 @@ export type Student = z.infer<typeof studentSchema>;
 
 export const columns = (fetchData: () => void): ColumnDef<Student>[] => [
     {
+        id: "student_photo",
+        header: () => {
+            return (
+                <div>
+                    Student Photo
+                </div>
+            )
+        },
+        meta: {
+            label: "Student Photo"
+        }
+    },
+    {
         accessorKey: "student_id",
         header: ({ column }) => {
             return (

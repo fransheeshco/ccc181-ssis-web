@@ -19,24 +19,34 @@ export async function fetchStudents(filters: studentFilters = {}): Promise<fetch
   }
 }
 
-export async function createStudent(data: Student) {
+export async function createStudent(data: Student, photoFile?: File) {
   const { student_id, first_name, last_name, program_code, year_level, gender } = data;
 
   try {
-    const res = await axiosInstance.post<{ message?: string }>("/students/create", {
-      student_id,
-      first_name,
-      last_name,
-      program_code,
-      year_level,
-      gender,
+    const formData = new FormData();
+    formData.append("student_id", student_id);
+    formData.append("first_name", first_name);
+    formData.append("last_name", last_name);
+    formData.append("program_code", program_code);
+    formData.append("year_level", year_level.toString());
+    formData.append("gender", gender);
+
+    // 2️⃣ Append photo if available
+    if (photoFile) {
+      formData.append("photo", photoFile);
+    }
+
+    const res = await axiosInstance.post<{ message?: string }>("/students/create", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
 
     return { message: res.data?.message || "✅ Student created successfully" };
   } catch (err: any) {
     const backendMessage =
-      err.response?.data?.message ||  // Flask returns { message: "..." }
-      err.response?.data?.error ||    // sometimes { error: "..." }
+      err.response?.data?.message ||  
+      err.response?.data?.error ||    
       err.message || 
       "API request failed";
 
@@ -48,7 +58,6 @@ export async function createStudent(data: Student) {
     );
   }
 }
-
 
 export async function updateStudent(
   data: updateStudentPayload
