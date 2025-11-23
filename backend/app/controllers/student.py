@@ -1,9 +1,15 @@
+import traceback
 from app.models.student import (
     get_all_students_model,
     create_student_model,
     update_student_model,
     delete_student_model,
-    get_total_students_model
+    get_total_students_model,
+    update_student_photo_model
+)
+
+from app.lib.supabaseclient import (
+    upload_student_photo
 )
 import psycopg2
 
@@ -16,7 +22,7 @@ def fetch_students_controller(limit=10, offset=0, search=None, sort_by="student_
     except psycopg2.Error as e:
         return {"error": f"Database error: {e}"}, 500
 
-def create_student_controller(student_id, first_name, last_name, year_level, gender, program_code):
+def create_student_controller(student_id, first_name, last_name, year_level, gender, program_code, photo_file=None):
     try:
         result = create_student_model(
             student_id=student_id,
@@ -26,12 +32,30 @@ def create_student_controller(student_id, first_name, last_name, year_level, gen
             gender=gender,
             program_code=program_code
         )
+
+        if "error" in result:
+            return result, 400  
+
+        if photo_file:
+            # Upload to Supabase FIRST
+            photo_file.stream.seek(0)  # reset pointer
+            photo_url = upload_student_photo(result["student_id"], photo_file)
+
+            if not photo_url:
+                return {"error": "Failed to upload photo"}, 500
+
+            # Now save the URL in the database
+            update_student_photo_model(result["student_id"], photo_url)
+
+            result["photo_url"] = photo_url
+
         if "error" in result:
             return result, 400
         return {"message": "✅ Student added successfully"}, 200
 
     except Exception as e:
         print(f"Error updating program: {e}")
+        print(traceback.format_exc())  
         return {"message": "⚠️ Internal server error"}, 500
 
 
@@ -68,3 +92,4 @@ def delete_student_controller(student_id):
             return {"error": "❌ Cannot delete student due to foreign key constraint"}, 409
         else:
             return {"error": "❌ Database integrity error"}, 400    
+        

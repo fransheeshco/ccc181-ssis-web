@@ -3,7 +3,7 @@ from flask import jsonify, request, Blueprint
 from app.controllers.student import (
     create_student_controller, fetch_students_controller,
     update_student_controller, delete_student_controller,
-    get_total_students_model
+    get_total_students_model, update_student_photo_model
 )
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
@@ -38,22 +38,31 @@ def fetch_students():
 @student_bp.route('/create', methods=['POST'])
 @jwt_required()
 def create_student():
-    valid_user = get_jwt_identity()
-    if valid_user is None:
-        return jsonify({"message": "❌ Unauthorized"}), 401
-    
-    data = request.get_json()
+    try:
+        valid_user = get_jwt_identity()
+        if valid_user is None:
+            return jsonify({"message": "❌ Unauthorized"}), 401
 
-    response, status = create_student_controller(
-        data.get("student_id"),
-        data.get("first_name"),
-        data.get("last_name"),
-        data.get("year_level"),
-        data.get("gender"),
-        data.get("program_code")
-    )
-    
-    return jsonify(response), status
+        # 1️⃣ Get form fields
+        student_id = request.form.get("student_id")
+        first_name = request.form.get("first_name")
+        last_name = request.form.get("last_name")
+        year_level = request.form.get("year_level")
+        gender = request.form.get("gender")
+        program_code = request.form.get("program_code")
+        photo_file = request.files.get("photo")  # optional
+
+        # 2️⃣ Call controller
+        student, status = create_student_controller(
+            student_id, first_name, last_name, year_level, gender, program_code, photo_file
+        )
+
+        return jsonify(student), status
+
+    except Exception as e:
+        import traceback
+        print(traceback.format_exc())
+        return jsonify({"message": "Internal Server Error", "error": str(e)}), 500
 
 
 @student_bp.route('/update/<string:student_id>', methods=['PUT'])

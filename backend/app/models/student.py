@@ -130,3 +130,10 @@ def delete_student_model(student_id):
         if not deleted_row:
             return {"error": "Student not found"}
         return {"message": "✅ Student deleted successfully"}
+
+def update_student_photo_model(student_id, photo_url):
+    with db.get_cursor(commit=True) as cur:
+        cur.execute(
+            "UPDATE students SET photo_url = %s WHERE student_id = %s;",
+            (photo_url, student_id)  # only the URL string, not the FileStorage
+        )
