@@ -5,6 +5,7 @@ export type Student = {
     program_code: string,
     year_level: string,
     gender: string,
+    photo_url?: string
 };
 
 export type StudentsData = {
@@ -25,7 +26,7 @@ export type updateStudentPayload = {
     program_code: string,
     year_level: string,
     gender: string,
-    curr_code: string
+    curr_code: string,
 }
 
 export type deleteStudentPayload = {

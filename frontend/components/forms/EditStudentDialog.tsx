@@ -30,17 +30,19 @@ const formSchema = z.object({
   program_code: z.string().min(1),
   year_level: z.string().min(1),
   gender: z.string().min(1),
+  curr_code: z.string().min(1),
 })
 
 type StudentForm = z.infer<typeof formSchema>
 
 interface EditStudentDialogProps {
-  student: StudentForm
+  student: StudentForm & { photo_url?: string }
   onSuccess?: () => void // ✅ parent refetch
 }
 
 export function EditStudentDialog({ student, onSuccess }: EditStudentDialogProps) {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [programs, setPrograms] = useState<Program[]>([])
@@ -55,8 +57,21 @@ export function EditStudentDialog({ student, onSuccess }: EditStudentDialogProps
       program_code: "",
       year_level: "",
       gender: "",
+      curr_code: "",
     },
   })
+
+  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0] || null;
+    setPhotoFile(file);
+
+    if (file) {
+      setPreviewSrc(URL.createObjectURL(file));
+    } else {
+      setPreviewSrc(null);
+    }
+  }
+
 
   // ✅ Fetch programs when dialog opens
   useEffect(() => {
@@ -85,23 +100,35 @@ export function EditStudentDialog({ student, onSuccess }: EditStudentDialogProps
         program_code: student.program_code,
         year_level: student.year_level,
         gender: student.gender,
+        curr_code: student.student_id,
       })
+      setPreviewSrc(null)
+      setPhotoFile(null)
     }
   }, [student, open, form])
 
   async function onSubmit(values: StudentForm) {
     try {
-      await updateStudent({
+      setLoading(true);
+
+      const payload = {
         ...values,
-        curr_code: student.student_id,
-      })
-      showToast("Student edited successfully.", "success")
-      setOpen(false)
-      if (onSuccess) onSuccess() // ✅ trigger parent refetch
+        curr_code: student.student_id, // existing ID used for URL
+      };
+
+      await updateStudent(payload, photoFile ?? undefined);
+
+      showToast("Student edited successfully.", "success");
+      setOpen(false);
+
+      if (onSuccess) onSuccess(); // refresh table
     } catch (err: any) {
-      setError(err.message || String(err))
+      setError(err.message || String(err));
+    } finally {
+      setLoading(false);
     }
   }
+
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -109,7 +136,7 @@ export function EditStudentDialog({ student, onSuccess }: EditStudentDialogProps
         <Button><Edit className="h-6 w-6" /></Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Student</DialogTitle>
           <DialogDescription>
@@ -119,13 +146,32 @@ export function EditStudentDialog({ student, onSuccess }: EditStudentDialogProps
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                       <div className="mb-2">
-              <FormLabel>Photo</FormLabel>
+            <div className="flex flex-col items-center gap-2">
+              {previewSrc ? (
+                <img
+                  src={previewSrc}
+                  alt="New photo preview"
+                  className="w-32 h-32 rounded-full object-cover border"
+                />
+              ) : student.photo_url ? (
+                <img
+                  src={student.photo_url}
+                  alt="Current photo"
+                  className="w-32 h-32 rounded-full object-cover border"
+                />
+              ) : (
+                <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                  No photo
+                </div>
+              )}
+
+              <FormLabel>Upload New Photo</FormLabel>
+
               <FormControl>
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => setPhotoFile(e.target.files?.[0] || null)}
+                  onChange={handlePhotoChange}
                 />
               </FormControl>
             </div>

@@ -26,17 +26,24 @@ export type Student = z.infer<typeof studentSchema>;
 export const columns = (fetchData: () => void): ColumnDef<Student>[] => [
     {
         id: "student_photo",
-        header: () => {
-            return (
-                <div>
-                    Student Photo
+        header: () => <div>Student Photo</div>,
+        meta: { label: "Student Photo" },
+        cell: ({ row }) => {
+            const student = row.original as Student & { photo_url?: string };
+            return student.photo_url ? (
+                <img
+                    src={student.photo_url}
+                    alt={`${student.first_name} ${student.last_name}`}
+                    className="w-12 h-12 rounded-full object-cover"
+                />
+            ) : (
+                <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-500">
+                    No Photo
                 </div>
-            )
+            );
         },
-        meta: {
-            label: "Student Photo"
-        }
     },
+
     {
         accessorKey: "student_id",
         header: ({ column }) => {
@@ -147,7 +154,10 @@ export const columns = (fetchData: () => void): ColumnDef<Student>[] => [
 
             return (
                 <>
-                    <EditStudentDialog student={student} onSuccess={fetchData} />
+                    <EditStudentDialog
+                        student={{ ...student, curr_code: student.student_id }}
+                        onSuccess={fetchData}
+                    />
                     <DeleteDialog
                         itemName={`${student.student_id}: ${student.last_name}`}
                         onConfirm={async () => {
