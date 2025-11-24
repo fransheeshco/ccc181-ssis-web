@@ -59,7 +59,7 @@ def create_student_controller(student_id, first_name, last_name, year_level, gen
         return {"message": "⚠️ Internal server error"}, 500
 
 
-def update_student_controller(new_student_id, new_first_name, new_last_name, new_year_level, new_gender, new_program_code, current_student_id):
+def update_student_controller(new_student_id, new_first_name, new_last_name, new_year_level, new_gender, new_program_code, current_student_id, photo_file=None):
     try:
         result = update_student_model(
             current_student_id=current_student_id,
@@ -68,10 +68,24 @@ def update_student_controller(new_student_id, new_first_name, new_last_name, new
             new_last_name=new_last_name,
             new_year_level=new_year_level,
             new_gender=new_gender,
-            new_program_code=new_program_code
+            new_program_code=new_program_code,
         )
+        
         if "error" in result:
             return result, 400
+        
+        if photo_file:
+            # Upload to Supabase FIRST
+            photo_file.stream.seek(0)  # reset pointer
+            photo_url = upload_student_photo(result["student_id"], photo_file)
+
+            if not photo_url:
+                return {"error": "Failed to upload photo"}, 500
+
+            # Now save the URL in the database
+            update_student_photo_model(result["student_id"], photo_url)
+
+            result["photo_url"] = photo_url
         
         return {"message": "✅ Student updated successfully"}, 200
 

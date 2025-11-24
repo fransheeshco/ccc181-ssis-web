@@ -60,26 +60,41 @@ def create_student():
         return jsonify(student), status
 
     except Exception as e:
-        import traceback
-        print(traceback.format_exc())
         return jsonify({"message": "Internal Server Error", "error": str(e)}), 500
 
 
 @student_bp.route('/update/<string:student_id>', methods=['PUT'])
 @jwt_required()
 def update_student(student_id):
-    valid_user = get_jwt_identity()
-    if valid_user is None:
-        return jsonify({"message": "❌ Unauthorized"}), 401
+    try: 
+        valid_user = get_jwt_identity()
+        if valid_user is None:
+            return jsonify({"message": "❌ Unauthorized"}), 401
+        
+        current_student_id= request.form.get("current_student_id")
+        student_id = request.form.get("new_student_id")
+        first_name = request.form.get("first_name")
+        last_name = request.form.get("last_name")
+        year_level = request.form.get("year_level")
+        gender = request.form.get("gender")
+        program_code = request.form.get("program_code")
+        photo_file = request.files.get("photo")  # optional
+
+        updated_student, status = update_student_controller(
+            current_student_id=current_student_id,
+            new_student_id=student_id, 
+            new_first_name=first_name, 
+            new_last_name=last_name, 
+            new_year_level=year_level, 
+            new_gender=gender, 
+            new_program_code=program_code,
+            photo_file=photo_file
+        )
+
+        return jsonify(updated_student), status
     
-    data = request.get_json()
-
-    response, status = update_student_controller(
-        data.get("student_id"), data.get("first_name"), data.get("last_name"),
-        data.get("year_level"), data.get("gender"), data.get("program_code"), student_id
-    )
-
-    return jsonify(response), status
+    except Exception as e:
+        return jsonify({"message": "Internal Server Error", "error": str(e)}), 500
 
 @student_bp.route('/delete/<string:student_id>', methods=['DELETE'])
 @jwt_required()
