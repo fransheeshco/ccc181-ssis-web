@@ -14,7 +14,6 @@ def create_program_controller(program_code, program_name, college_code):
         print(f"Error creating program: {e}")
         return {"message": "⚠️ Internal server error"}, 500
 
-
 def fetch_programs_controller(limit=10, offset=0, search=None, sort_by="program_code", order="ASC"):
     try:
         rows = get_all_programs_model(limit, offset, search, sort_by, order)

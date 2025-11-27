@@ -44,7 +44,7 @@ export const columns = (fetchData: () => void): ColumnDef<Student>[] => [
             const student = row.original as Student & { photo_url?: string };
 
             const defaultPhoto =
-                "https://gromnlgzvpnkbzlvefrw.supabase.co/storage/v1/object/public/student_photos/default_student_photo.png";
+                "https://gromnlgzvpnkbzlvefrw.supabase.co/storage/v1/object/public/student_photos/defaultphoto.jpg";
 
             const imgSrc = student.photo_url && student.photo_url.trim() !== ""
                 ? student.photo_url

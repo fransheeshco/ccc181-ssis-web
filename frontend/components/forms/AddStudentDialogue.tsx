@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useState, useEffect } from "react"
 import { z } from "zod"
-import { Plus } from "lucide-react"
+import { Plus, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -26,8 +26,6 @@ import {
 } from "@/components/ui/select"
 import { getAllPrograms } from "@/lib/ProgramApi"
 import { Program } from "@/lib/types/programTypes"
-
-type StudentID = `${number}${number}${number}${number}-${number}${number}${number}${number}`;
 
 const formSchema = z.object({
   student_id: z.string().regex(/^\d{4}-\d{4}$/, "ID must be in YYYY-NNNN format"),
@@ -55,45 +53,57 @@ export function AddStudentDialog({ label, onSuccess }: AddStudentDialogProps) {
       gender: "",
     },
   })
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
+
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [previewSrc, setPreviewSrc] = useState<string | null>(null)
   const [open, setOpen] = useState(false)
   const [programs, setPrograms] = useState<Program[]>([])
+  const [removePhoto, setRemovePhoto] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
   useEffect(() => {
-    if (open) {
-      fetchPrograms()
-    }
+    if (open) fetchPrograms()
   }, [open])
 
   async function fetchPrograms() {
     try {
       setLoading(true)
       const programData = await getAllPrograms()
-      const list = programData || [] // handle both cases
-      setPrograms(list)
-      if (list.length > 0 && !form.getValues().program_code) {
-        form.setValue('program_code', list[0].program_code)
-      }
+      setPrograms(programData || [])
     } catch (error) {
-      showToast(`Error fetching programs: ${error}`, 'warning')
+      showToast(`Error fetching programs: ${error}`, "warning")
     } finally {
       setLoading(false)
     }
   }
 
+  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0] || null
+    setPhotoFile(file)
+
+    if (file) {
+      setPreviewSrc(URL.createObjectURL(file))
+    } else {
+      setPreviewSrc(null)
+    }
+  }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const response = await createStudent(values, photoFile ?? undefined)
+      setLoading(true)
+      await createStudent(values, photoFile ?? undefined, removePhoto)
       showToast("Student added successfully.")
       setOpen(false)
       form.reset()
+      setPreviewSrc(null)
+      setRemovePhoto(false)
       if (onSuccess) onSuccess()
     } catch (err: any) {
-      console.error("API error:", err);
-      setError(err.message || String(err));
+      console.error("API error:", err)
+      setError(err.message || String(err))
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -116,7 +126,7 @@ export function AddStudentDialog({ label, onSuccess }: AddStudentDialogProps) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add Student</DialogTitle>
           <DialogDescription>Fill in the form to add a new student.</DialogDescription>
@@ -124,151 +134,161 @@ export function AddStudentDialog({ label, onSuccess }: AddStudentDialogProps) {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="mb-2">
+
+            {/* ----- PHOTO UPLOAD + PREVIEW ----- */}
+            <div className="flex flex-col items-center gap-3">
               <FormLabel>Photo</FormLabel>
+
+              {previewSrc ? (
+                <>
+                  <img
+                    src={previewSrc}
+                    alt="Preview"
+                    className="w-32 h-32 rounded-full object-cover border"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="text-red-600 border-red-400"
+                    onClick={() => {
+                      setPhotoFile(null)
+                      setPreviewSrc(null)
+                      setRemovePhoto(true)
+                    }}
+                  >
+                    Remove Photo
+                  </Button>
+                </>
+              ) : (
+                <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center text-sm text-gray-600">
+                  No Photo
+                </div>
+              )}
+
               <FormControl>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setPhotoFile(e.target.files?.[0] || null)}
-                />
+                <label className="cursor-pointer px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                  {photoFile ? photoFile.name : "Upload Photo"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                    className="hidden"
+                  />
+                </label>
               </FormControl>
             </div>
 
-            <FormField
-              control={form.control}
-              name="student_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>ID Number</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter ID number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="first_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter first name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="last_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Last Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter last name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* ----- FORM FIELDS ----- */}
+            <FormField control={form.control} name="student_id" render={({ field }) => (
+              <FormItem>
+                <FormLabel>ID Number</FormLabel>
+                <FormControl><Input placeholder="Enter ID number" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+            <FormField control={form.control} name="first_name" render={({ field }) => (
+              <FormItem>
+                <FormLabel>First Name</FormLabel>
+                <FormControl><Input placeholder="Enter first name" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+            <FormField control={form.control} name="last_name" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Last Name</FormLabel>
+                <FormControl><Input placeholder="Enter last name" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+
             <FormField
               control={form.control}
               name="program_code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Program</FormLabel> {/* Changed from College to Program */}
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    disabled={loading}
-                  >
-                    <FormControl>
+                  <FormLabel>Program</FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}          // controlled value
+                      disabled={loading}           // disable while loading
+                    >
                       <SelectTrigger>
-                        <SelectValue placeholder={loading ? "Loading programs..." : "Select a program"} />
+                        <SelectValue placeholder="Select a program" />
                       </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {
-                        programs
-                          .filter(p => p && p.program_code && p.program_name)
-                          .map(program => (
-                            <SelectItem
-                              key={`${program.program_code}-${program.program_name}`}
-                              value={program.program_code}
-                            >
-                              {program.program_code} - {program.program_name}
-                            </SelectItem>
-                          ))}
+                      <SelectContent>
+                        {programs.map(program => (
+                          <SelectItem
+                            key={`${program.program_code}-${program.program_name}`}
+                            value={program.program_code}
+                          >
+                            {program.program_code} — {program.program_name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
 
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="year_level"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Year Level</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select year level" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="1">1st Year</SelectItem>
-                      <SelectItem value="2">2nd Year</SelectItem>
-                      <SelectItem value="3">3rd Year</SelectItem>
-                      <SelectItem value="4">4th Year</SelectItem>
-                      <SelectItem value="4+">4th+ Year</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="gender"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Gender</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select gender" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Male">Male</SelectItem>
-                      <SelectItem value="Female">Female</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* YEAR LEVEL */}
+            <FormField control={form.control} name="year_level" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Year Level</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={loading}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select year level" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="1">1st Year</SelectItem>
+                    <SelectItem value="2">2nd Year</SelectItem>
+                    <SelectItem value="3">3rd Year</SelectItem>
+                    <SelectItem value="4">4th Year</SelectItem>
+                    <SelectItem value="4+">4th+ Year</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+            {/* GENDER */}
+            <FormField control={form.control} name="gender" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Gender</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={loading}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select gender" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Male">Male</SelectItem>
+                    <SelectItem value="Female">Female</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )} />
+
             {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
+
             <DialogFooter>
-              <Button type="submit" disabled={loading}>
-                Submit
+              <Button type="submit" disabled={loading} className="flex items-center gap-2 justify-center">
+                {loading && <Loader2 className="animate-spin h-4 w-4" />}
+                {loading ? "Loading..." : "Submit"}
               </Button>
             </DialogFooter>
+
           </form>
         </Form>
+
       </DialogContent>
     </Dialog>
   )

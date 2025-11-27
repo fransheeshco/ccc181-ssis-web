@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import { Edit } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { z } from "zod"
 import { updateCollege } from "@/lib/CollegeApi"
 import { Button } from "@/components/ui/button"
@@ -36,7 +36,7 @@ type FormValues = z.infer<typeof formSchema>
 
 interface EditCollegeDialogueProps {
   college: { college_code: string; college_name: string }
-  onSuccess?: () => void // ✅ optional refetch callback
+  onSuccess?: () => void
 }
 
 export function EditCollegeDialogue({ college, onSuccess }: EditCollegeDialogueProps) {
@@ -50,6 +50,9 @@ export function EditCollegeDialogue({ college, onSuccess }: EditCollegeDialogueP
 
   const [open, setOpen] = useState(false)
   const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false) // New state for confirmation dialog
+  const [pendingValues, setPendingValues] = useState<FormValues | null>(null) // Store values awaiting confirmation
 
   useEffect(() => {
     if (college) {
@@ -61,6 +64,8 @@ export function EditCollegeDialogue({ college, onSuccess }: EditCollegeDialogueP
   }, [college, form])
 
   async function onSubmit(values: FormValues) {
+    setLoading(true)
+    setError("")
     try {
       await updateCollege({
         curr_code: college.college_code,
@@ -70,68 +75,113 @@ export function EditCollegeDialogue({ college, onSuccess }: EditCollegeDialogueP
 
       showToast("College updated successfully!", "success")
       setOpen(false)
+      setConfirmOpen(false)
+      setPendingValues(null)
 
-      // ✅ Trigger refetch after update
       if (onSuccess) onSuccess()
     } catch (err: any) {
       setError(err.message || String(err))
+    } finally {
+      setLoading(false)
     }
   }
 
+  function handleFormSubmit(values: FormValues) {
+    setPendingValues(values)
+    setConfirmOpen(true) // Open confirmation dialog
+  }
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild className="m-2">
-        <div>
-          Edit
-        </div>
-      </DialogTrigger>
+    <>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild className="m-2">
+          <div>Edit</div>
+        </DialogTrigger>
 
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Edit College</DialogTitle>
-          <DialogDescription>
-            Editing <strong>{college.college_code}</strong>
-          </DialogDescription>
-        </DialogHeader>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit College</DialogTitle>
+            <DialogDescription>
+              Editing <strong>{college.college_code}</strong>
+            </DialogDescription>
+          </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="new_college_code"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>New College Code</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter new code" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="new_college_code"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>New College Code</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter new code" {...field} disabled={loading} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="new_college_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>New College Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter new name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="new_college_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>New College Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter new name" {...field} disabled={loading} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="flex items-center gap-2 justify-center"
+                >
+                  Save Changes
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Confirm Changes</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to update the college <strong>{college.college_code} - {college.college_name}</strong>?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex justify-end gap-2">
 
             {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
 
-            <DialogFooter>
-              <Button type="submit">Save Changes</Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setConfirmOpen(false)
+                setPendingValues(null)
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                if (pendingValues) onSubmit(pendingValues)
+              }}
+            >
+              {loading && <Loader2 className="animate-spin h-4 w-4" />}
+              {loading ? "Loading..." : "Confirm"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }

@@ -32,7 +32,7 @@ export async function fetchStudents(
   }
 }
 
-export async function createStudent(data: Student, photoFile?: File) {
+export async function createStudent(data: Student, photoFile?: File, removePhoto?: boolean) {
   const {
     student_id,
     first_name,
@@ -77,8 +77,8 @@ export async function createStudent(data: Student, photoFile?: File) {
     console.error("API request failed:", backendMessage);
     throw new Error(
       err.response?.data?.error ||
-        err.response?.data?.message ||
-        "API request failed"
+      err.response?.data?.message ||
+      "API request failed"
     );
   }
 }
@@ -88,19 +88,19 @@ export async function updateStudent(
   photoFile?: File
 ): Promise<{ message?: string; error?: string }> {
   const {
-    student_id,       // this becomes new_student_id
+    student_id,       
     first_name,
     last_name,
     program_code,
     year_level,
     gender,
-    curr_code,        // this becomes current_student_id
+    curr_code,        
+    remove_photo,     
   } = data;
 
   try {
     const formData = new FormData();
 
-    // MUST MATCH BACKEND EXACTLY
     formData.append("current_student_id", curr_code);
     formData.append("new_student_id", student_id);
 
@@ -110,15 +110,20 @@ export async function updateStudent(
     formData.append("year_level", year_level.toString());
     formData.append("gender", gender);
 
+    // Correct key for backend
     if (photoFile) {
       formData.append("photo", photoFile);
     }
+
+    formData.append("remove_photo", remove_photo ? "true" : "false");
 
     const res = await axiosInstance.put(
       `/students/update/${curr_code}`,
       formData,
       {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       }
     );
 

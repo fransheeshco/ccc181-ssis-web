@@ -3,7 +3,7 @@ from flask import jsonify, request, Blueprint
 from app.controllers.student import (
     create_student_controller, fetch_students_controller,
     update_student_controller, delete_student_controller,
-    get_total_students_model, update_student_photo_model
+    get_total_students_model, remove_student_photo_controller,
 )
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
@@ -57,7 +57,7 @@ def create_student():
         return jsonify(student), status
 
     except Exception as e:
-        return jsonify({"message": "Internal Server Error", "error": str(e)}), 500
+        return jsonify({"error": str(e)}), 500
 
 
 @student_bp.route('/update/<string:student_id>', methods=['PUT'])
@@ -75,7 +75,11 @@ def update_student(student_id):
         year_level = request.form.get("year_level")
         gender = request.form.get("gender")
         program_code = request.form.get("program_code")
-        photo_file = request.files.get("photo")  # optional
+        photo_file = request.files.get("photo")
+
+        remove_photo_str = request.form.get("remove_photo", "false")
+        remove_photo = remove_photo_str.lower() in ("true", "1", "yes")
+
 
         updated_student, status = update_student_controller(
             current_student_id=current_student_id,
@@ -85,13 +89,14 @@ def update_student(student_id):
             new_year_level=year_level, 
             new_gender=gender, 
             new_program_code=program_code,
-            photo_file=photo_file
+            photo_file=photo_file,
+            remove_photo=remove_photo
         )
 
         return jsonify(updated_student), status
     
     except Exception as e:
-        return jsonify({"message": "Internal Server Error", "error": str(e)}), 500
+        return jsonify({"error": str(e)}), 500
 
 @student_bp.route('/delete/<string:student_id>', methods=['DELETE'])
 @jwt_required()
@@ -101,3 +106,12 @@ def delete_student(student_id):
         return jsonify({"message": "❌ Unauthorized"}), 401
     
     return jsonify(delete_student_controller(student_id))
+
+@student_bp.route('/remove-photo/<string:student_id>', methods=['POST'])
+@jwt_required()
+def remove_student_photo(student_id):
+    valid_user = get_jwt_identity()
+    if valid_user is None:
+        return jsonify({"message": "❌ Unauthorized"}), 401
+
+    return jsonify(remove_student_photo_controller(student_id))

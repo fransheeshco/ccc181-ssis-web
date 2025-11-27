@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useState, useEffect } from "react"
 import { z } from "zod"
-import { Plus } from "lucide-react"
+import { Plus, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -83,7 +83,7 @@ export function AddProgramDialog({ label, onSuccess }: AddProgramDialogProps) {
       showToast("Program Added Successfully", 'success')
       setOpen(false)
       form.reset()
-      if (onSuccess) onSuccess() 
+      if (onSuccess) onSuccess()
     } catch (err: any) {
       console.error("API error:", err);
       setError(err.message || String(err));
@@ -149,8 +149,8 @@ export function AddProgramDialog({ label, onSuccess }: AddProgramDialogProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>College</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
+                  <Select
+                    onValueChange={field.onChange}
                     defaultValue={field.value}
                     disabled={loading}
                   >
@@ -161,8 +161,8 @@ export function AddProgramDialog({ label, onSuccess }: AddProgramDialogProps) {
                     </FormControl>
                     <SelectContent>
                       {colleges.map((college) => (
-                        <SelectItem 
-                          key={college.college_code} 
+                        <SelectItem
+                          key={college.college_code}
                           value={college.college_code}
                         >
                           {college.college_code} - {college.college_name}
@@ -177,7 +177,10 @@ export function AddProgramDialog({ label, onSuccess }: AddProgramDialogProps) {
 
             {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
             <DialogFooter>
-              <Button type="submit">Submit</Button>
+              <Button type="submit">
+                {loading && <Loader2 className="animate-spin h-4 w-4" />}
+                {loading ? "Loading..." : "Submit"}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

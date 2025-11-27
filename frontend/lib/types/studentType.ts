@@ -27,6 +27,7 @@ export type updateStudentPayload = {
     year_level: string,
     gender: string,
     curr_code: string,
+    remove_photo: boolean,
 }
 
 export type deleteStudentPayload = {

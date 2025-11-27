@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useState } from "react"
 import { z } from "zod"
-import { Plus } from "lucide-react"
+import { Plus, Loader2 } from "lucide-react"
 import { createCollege, fetchColleges } from "@/lib/CollegeApi"
 import { showToast } from "@/lib/toast"
 
@@ -33,12 +33,13 @@ export function AddCollegeDialog({ label, onSuccess }: AddCollegeDialogueProps) 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      college_code: "CCS",
-      college_name: "College of Computer Studies",
+      college_code: "",
+      college_name: "",
     },
   })
   const [open, setOpen] = useState(false)
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false)
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -46,7 +47,7 @@ export function AddCollegeDialog({ label, onSuccess }: AddCollegeDialogueProps) 
       showToast("College Added Successfully.", "success")
       setOpen(false)
       form.reset()
-      if (onSuccess) onSuccess() 
+      if (onSuccess) onSuccess()
     } catch (err: any) {
       console.error("API error:", err);
       setError(err.message || String(err));
@@ -111,7 +112,10 @@ export function AddCollegeDialog({ label, onSuccess }: AddCollegeDialogueProps) 
             {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
 
             <DialogFooter>
-              <Button type="submit">Submit</Button>
+              <Button type="submit">
+                {loading && <Loader2 className="animate-spin h-4 w-4" />}
+                {loading ? "Loading..." : "Submit"}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

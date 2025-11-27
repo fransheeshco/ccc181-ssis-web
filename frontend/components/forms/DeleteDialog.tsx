@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { showToast } from "@/lib/toast"
-import { Trash } from "lucide-react"
+import { Loader2 } from "lucide-react"
 
 interface DeleteDialogProps {
   onConfirm: () => Promise<{ error?: string; message?: string }> | void
@@ -23,20 +23,19 @@ interface DeleteDialogProps {
 export function DeleteDialog({ onConfirm, itemName, onSuccess }: DeleteDialogProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  
+
   const handleDelete = async () => {
     setLoading(true)
     try {
       const result = await onConfirm()
-      console.log(result)
 
-    if (result?.error) {
-      showToast(result.error || "Failed to delete item.")
-    } else {
-      showToast(result?.message || "✅ Successfully deleted.")
-      setOpen(false)
-      onSuccess?.() // ✅ trigger parent refetch
-    }
+      if (result?.error) {
+        showToast(result.error || "Failed to delete item.")
+      } else {
+        showToast(result?.message || "✅ Successfully deleted.")
+        setOpen(false) // ✅ close only on success
+        onSuccess?.()
+      }
     } catch (err) {
       console.error("DeleteDialog error:", err)
       showToast("❌ An unexpected error occurred.")
@@ -45,6 +44,7 @@ export function DeleteDialog({ onConfirm, itemName, onSuccess }: DeleteDialogPro
       setOpen(false)
     }
   }
+
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -71,9 +71,12 @@ export function DeleteDialog({ onConfirm, itemName, onSuccess }: DeleteDialogPro
             variant="destructive"
             onClick={handleDelete}
             disabled={loading}
+            className="flex items-center gap-2 justify-center"
           >
+            {loading && <Loader2 className="animate-spin h-4 w-4" />}
             {loading ? "Deleting..." : "Delete"}
           </Button>
+
         </DialogFooter>
       </DialogContent>
     </Dialog>

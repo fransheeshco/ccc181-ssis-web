@@ -1,4 +1,5 @@
 from app.db import db
+from app.lib.supabaseclient import delete_student_photo
 
 STUDENT_COLUMNS = ["student_id", "first_name", "last_name", "year_level", "gender", "program_code"]
 
@@ -134,9 +135,52 @@ def delete_student_model(student_id):
             return {"error": "Student not found"}
         return {"message": "✅ Student deleted successfully"}
 
-def update_student_photo_model(student_id, photo_url):
+def update_student_photo_model(student_id, photo_file_name, photo_url):
+    """
+    Updates BOTH filename and URL in DB.
+    """
     with db.get_cursor(commit=True) as cur:
         cur.execute(
-            "UPDATE students SET photo_url = %s WHERE student_id = %s;",
-            (photo_url, student_id)  # only the URL string, not the FileStorage
+            """
+            UPDATE students
+            SET photo_file_name = %s,
+                photo_url = %s
+            WHERE student_id = %s;
+            """,
+            (photo_file_name, photo_url, student_id)
         )
+
+def remove_student_photo_model(student_id):
+    """
+    Deletes student's photo from Supabase and clears DB fields.
+    """
+    with db.get_cursor(commit=True) as cur:
+        cur.execute(
+            "SELECT photo_file_name FROM students WHERE student_id = %s;",
+            (student_id,)
+        )
+        result = cur.fetchone()
+
+        if not result or not result[0]:
+            return {"message": "No photo to remove"}
+
+        file_name = result[0]  # already the filename only
+
+    # Delete from Supabase
+    deleted = delete_student_photo(file_name)
+    if not deleted:
+        return {"error": "Failed to delete photo from storage"}
+
+    # Clear DB
+    with db.get_cursor(commit=True) as cur:
+        cur.execute(
+            """
+            UPDATE students
+            SET photo_file_name = NULL,
+                photo_url = NULL
+            WHERE student_id = %s;
+            """,
+            (student_id,)
+        )
+
+    return {"message": "Photo removed successfully"}
