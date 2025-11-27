@@ -1,39 +1,48 @@
 #!/bin/bash
 
-echo "🚀 Building frontend..."
+set -e
+
+echo "🚀 Building Next.js frontend..."
 cd frontend
+
+# Install dependencies
 pnpm install
+
+# Build static export
 pnpm run build
 
+# Next.js static output folder
+FRONTEND_OUT="out"
+BACKEND_STATIC="../backend/app/static"
+
 echo "🧹 Cleaning old static files..."
-rm -rf ../backend/app/static
-mkdir -p ../backend/app/static
+rm -rf $BACKEND_STATIC
+mkdir -p $BACKEND_STATIC
 
 echo "📁 Copying Next.js build output..."
-# Copy the entire out directory
-cp -r out/* ../backend/app/static/
+cp -r $FRONTEND_OUT/* $BACKEND_STATIC/
 
-# Ensure _next static assets are properly copied
-if [ -d "out/_next" ]; then
+# Ensure _next static assets are properly copied (redundant but safe)
+if [ -d "$FRONTEND_OUT/_next" ]; then
     echo "📦 Copying _next static assets..."
-    mkdir -p ../backend/app/static/_next
-    cp -r out/_next/* ../backend/app/static/_next/
+    mkdir -p $BACKEND_STATIC/_next
+    cp -r $FRONTEND_OUT/_next/* $BACKEND_STATIC/_next/
 fi
 
-echo "✅ Build completed successfully!"
+echo "✅ Frontend build copied successfully!"
 
-echo "🔥 Setting up backend environment..."
+# Go back to backend
 cd ../backend
-# Check if Pipenv is installed, install if missing
+
+# Check pipenv
 if ! command -v pipenv &> /dev/null; then
-  echo "📦 Installing Pipenv..."
+  echo "📦 Installing pipenv..."
   pip install --user pipenv
-  export PATH="$HOME/.local/bin:$PATH"  
+  export PATH="$HOME/.local/bin:$PATH"
 fi
 
-# Install dependencies from Pipfile
-echo "📦 Installing Python dependencies from Pipfile..."
+echo "📦 Installing Python dependencies..."
 pipenv install
 
-echo "🔥 Starting Flask server with Pipenv..."
+echo "🔥 Starting Flask server..."
 pipenv run python run.py
