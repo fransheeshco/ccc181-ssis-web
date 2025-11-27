@@ -49,9 +49,9 @@ export function DeleteDialog({ onConfirm, itemName, onSuccess }: DeleteDialogPro
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild className="m-2">
-        <Button variant="destructive">
-          <Trash className="h-6 w-6" />
-        </Button>
+        <div>
+          Delete
+        </div>
       </DialogTrigger>
 
       <DialogContent className="max-w-md">

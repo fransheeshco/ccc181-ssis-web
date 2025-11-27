@@ -72,7 +72,7 @@ export default function ProgramClient() {
           {
             Component: AddProgramDialog ,
             props: {
-                label: "Add College",
+                label: "Add Program",
                 onSuccess: () => loadData(pageIndex * pageSize),
               },
           }

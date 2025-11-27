@@ -42,28 +42,28 @@ export function DataTableToolbar<TData>({
     <div className="flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between">
       {/* Left Side: Search + Filter */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <InputWithButton 
-          onSearch={onSearch || (() => {})} 
+        <InputWithButton
+          onSearch={onSearch || (() => { })}
         />
 
-        <DropdownMenu>
+{/*         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               className="w-full justify-start sm:w-auto"
             >
               <ListFilter className="mr-2 h-4 w-4" />
-              {selectedColumnId ? `${selectedColumnId}` : "Filter by"}
+              {selectedColumnId ? `${selectedColumnId}` : "Search by"}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-[200px]">
             {table
               .getAllColumns()
-              .filter((column) => column.id !== "actions")
+              .filter((column) => column.columnDef && "accessorKey" in column.columnDef)   // <<< FIX: Check accessorKey in columnDef
               .map((column) => {
                 const header =
-                  (column.columnDef.meta as any)?.label || column.id
+                  (column.columnDef.meta as any)?.label || column.id;
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
@@ -71,18 +71,19 @@ export function DataTableToolbar<TData>({
                     checked={selectedColumnId === header}
                     onCheckedChange={(value) => {
                       if (value) {
-                        setSelectedColumnId(header)
+                        setSelectedColumnId(header);
                       } else {
-                        setSelectedColumnId(null)
+                        setSelectedColumnId(null);
                       }
                     }}
                   >
                     {header}
                   </DropdownMenuCheckboxItem>
-                )
+                );
               })}
+
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
       </div>
 
       {/* Right Side: Extra Component + Actions */}

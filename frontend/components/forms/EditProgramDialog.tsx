@@ -97,7 +97,9 @@ export function EditProgramDialog({ program, onSuccess }: EditProgramDialogProps
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild className="m-2">
-        <Button><Edit className="h-6 w-6" /></Button>
+        <div>
+          Edit
+        </div>
       </DialogTrigger>
 
       <DialogContent className="max-w-md">

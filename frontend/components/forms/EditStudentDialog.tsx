@@ -133,7 +133,9 @@ export function EditStudentDialog({ student, onSuccess }: EditStudentDialogProps
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild className="m-2">
-        <Button><Edit className="h-6 w-6" /></Button>
+        <div>
+          Edit
+        </div>
       </DialogTrigger>
 
       <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
@@ -221,21 +223,53 @@ export function EditStudentDialog({ student, onSuccess }: EditStudentDialogProps
               </FormItem>
             )} />
 
-            <FormField control={form.control} name="year_level" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Year Level</FormLabel>
-                <FormControl><Input placeholder="Enter year level" {...field} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+            <FormField
+              control={form.control}
+              name="year_level"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Year Level</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select year level" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="1">1</SelectItem>
+                      <SelectItem value="2">2</SelectItem>
+                      <SelectItem value="3">3</SelectItem>
+                      <SelectItem value="4">4</SelectItem>
+                      <SelectItem value="4+">4+</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <FormField control={form.control} name="gender" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Gender</FormLabel>
-                <FormControl><Input placeholder="Enter gender" {...field} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+            <FormField
+              control={form.control}
+              name="gender"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Gender</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
             <DialogFooter>

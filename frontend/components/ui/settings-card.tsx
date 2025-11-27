@@ -31,7 +31,7 @@ export function SettingsCard({ user }: SettingsCardProps) {
 
       if (response.status === 200) {
         console.log("User logged out successfully")
-        router.push("/")
+        window.location.href = "/";
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -40,7 +40,7 @@ export function SettingsCard({ user }: SettingsCardProps) {
         console.error("Logout failed:", error)
       }
       // Even if there's an error, we can still redirect to home
-      router.push("/")
+      window.location.href = "/";
     }
   }
 

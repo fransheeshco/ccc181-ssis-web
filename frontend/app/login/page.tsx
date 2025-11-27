@@ -27,7 +27,7 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       await login(email, password);
-      router.push("/protected/settings");
+      window.location.href = "/protected/settings";
     } catch (err: any) {
       console.error("API error:", err);
       setError(err.message || String(err));
@@ -71,7 +71,7 @@ export default function LoginPage() {
             </Button>
           </form>
           <p className="mt-4 text-sm text-center text-gray-600">
-            Don’t have an account? <Link href="/register" className="text-blue-600 hover:underline">Register</Link>
+            Don’t have an account? <a href="/register" className="text-blue-600 hover:underline">Register</a>
           </p>
         </CardContent>
       </Card>

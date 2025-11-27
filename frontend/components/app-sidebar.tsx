@@ -47,37 +47,37 @@ export function AppSidebar() {
             <SidebarMenu className="mt-2 space-y-1">
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link
+                  <a
                     href="/protected/students"
                     className="flex items-center gap-3 px-4 py-2"
                   >
                     <Users className="h-6 w-6" />
                     <span className="text-lg font-semibold">Students</span>
-                  </Link>
+                  </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link
+                  <a
                     href="/protected/programs"
                     className="flex items-center gap-3 px-4 py-2"
                   >
                     <BookOpen className="h-6 w-6" />
                     <span className="text-lg font-semibold">Program</span>
-                  </Link>
+                  </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link
+                  <a
                     href="/protected/colleges"
                     className="flex items-center gap-3 px-4 py-2"
                   >
                     <School className="h-6 w-6" />
                     <span className="text-lg font-semibold">College</span>
-                  </Link>
+                  </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -90,10 +90,10 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Link href="/protected/settings" className="flex items-center gap-2">
+              <a href="/protected/settings" className="flex items-center gap-2">
                 <Settings className="h-5 w-5" />
                 <span>Settings</span>
-              </Link>
+              </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

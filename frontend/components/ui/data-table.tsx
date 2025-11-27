@@ -62,43 +62,69 @@ export function DataTable<TData>({
     manualSorting: true,
     manualPagination: true,
     pageCount: Math.ceil(total / pageSize),
-    onSortingChange, // 🔥 controlled from parent
+    onSortingChange,
     state: {
       sorting,
       pagination: { pageIndex, pageSize },
-    }
+    },
   })
+
+  // Helper to get Tailwind alignment class
+  const getAlignClass = (align?: string) => {
+    switch (align) {
+      case "center":
+        return "text-center"
+      case "right":
+        return "text-right"
+      default:
+        return "text-left"
+    }
+  }
 
   return (
     <div className="w-full flex-1">
       {/* Toolbar */}
-      <DataTableToolbar table={table} actions={actions} onSearch={onSearch}  />
+      <DataTableToolbar table={table} actions={actions} onSearch={onSearch} />
 
       {/* Table */}
       <div className="h-full overflow-hidden rounded-md border">
-        <Table>
+        <Table className="w-full table-fixed">
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
+            {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead className="bg-gray-100" key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
+                {headerGroup.headers.map(header => {
+                  const align = (header.column.columnDef.meta as any)?.align || "left"
+                  return (
+                    <TableHead
+                      key={header.id}
+                      className={`bg-gray-100 ${getAlignClass(align)}`}
+                      style={{ width: header.getSize() || "auto" }}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
+                  )
+                })}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map(row => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map(cell => {
+                    const align = (cell.column.columnDef.meta as any)?.align || "left"
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className={getAlignClass(align)}
+                        style={{ width: cell.column.getSize() || "auto" }}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    )
+                  })}
                 </TableRow>
               ))
             ) : (

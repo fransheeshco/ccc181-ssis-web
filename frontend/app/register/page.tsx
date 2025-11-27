@@ -81,7 +81,7 @@ export default function RegisterPage() {
             </Button>
           </form>
             <p className="mt-4 text-sm text-center text-gray-600">
-                Already have an account? <Link href="/login" className="text-blue-600 hover:underline">Log in here</Link>
+                Already have an account? <a href="/login" className="text-blue-600 hover:underline">Log in here</a>
             </p>
         </CardContent>
       </Card>
