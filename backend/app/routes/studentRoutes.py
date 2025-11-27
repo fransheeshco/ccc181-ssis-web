@@ -13,21 +13,18 @@ student_bp = Blueprint('students', __name__, url_prefix='/api/students')
 @student_bp.route('/', methods=['GET'])
 @jwt_required()
 def fetch_students():
-    valid_user = get_jwt_identity()
-    if valid_user is None:
+    user = get_jwt_identity()
+    if not user:
         return jsonify({"message": "❌ Unauthorized"}), 401
     
     limit = request.args.get("limit", default=10, type=int)
     offset = request.args.get("offset", default=0, type=int)
     search = request.args.get("search", default=None, type=str)
-    filter_by = request.args.get("sort_by", default="student_id", type=str)
+    sort_by = request.args.get("sort_by", default="student_id", type=str)
     order = request.args.get("order", default="ASC", type=str)
 
-    print(f"Received params - limit: {limit}, offset: {offset}, search: {search}, sort_by: {filter_by}, order: {order}")
-        
-
-    total_count = get_total_students_model(search) 
-    students = fetch_students_controller(limit, offset, search, filter_by, order)
+    students = fetch_students_controller(limit, offset, search, sort_by, order)
+    total_count = get_total_students_model(search)
 
     return jsonify({
         "students": students,

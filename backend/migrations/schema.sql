@@ -31,6 +31,7 @@ CREATE TABLE students (
     year_level year_level_enum NOT NULL,
     gender gender_enum NOT NULL,
     program_code VARCHAR(50),
+    photo_url TEXT,
     FOREIGN KEY (program_code)
         REFERENCES programs (program_code)
         ON DELETE SET NULL
