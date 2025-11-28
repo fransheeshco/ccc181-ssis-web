@@ -1,0 +1,1 @@
+(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,63417,e=>{"use strict";e.s(["default",()=>r]);var t=e.i(92095);let r=function(){return(0,t.jsx)("div",{className:"flex items-center justify-center w-full min-h-screen text-8xl text-red-500",children:"error"})}}]);
