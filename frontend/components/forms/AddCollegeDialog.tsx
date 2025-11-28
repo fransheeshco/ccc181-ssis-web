@@ -33,8 +33,8 @@ export function AddCollegeDialog({ label, onSuccess }: AddCollegeDialogueProps) 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      college_code: "CCS",
-      college_name: "College of Computer Studies",
+      college_code: "",
+      college_name: "",
     },
   })
   const [open, setOpen] = useState(false)

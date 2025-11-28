@@ -55,34 +55,43 @@ export function AddStudentDialog({ label, onSuccess }: AddStudentDialogProps) {
       gender: "",
     },
   })
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
+
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [previewSrc, setPreviewSrc] = useState<string | null>(null)
+
   const [open, setOpen] = useState(false)
   const [programs, setPrograms] = useState<Program[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
   useEffect(() => {
-    if (open) {
-      fetchPrograms()
-    }
+    if (open) fetchPrograms()
   }, [open])
 
   async function fetchPrograms() {
     try {
       setLoading(true)
       const programData = await getAllPrograms()
-      const list = programData || [] // handle both cases
+      const list = programData || []
       setPrograms(list)
-      if (list.length > 0 && !form.getValues().program_code) {
-        form.setValue('program_code', list[0].program_code)
-      }
+
     } catch (error) {
-      showToast(`Error fetching programs: ${error}`, 'warning')
+      showToast(`Error fetching programs: ${error}`, "warning")
     } finally {
       setLoading(false)
     }
   }
 
+  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0] || null
+    setPhotoFile(file)
+
+    if (file) {
+      setPreviewSrc(URL.createObjectURL(file))
+    } else {
+      setPreviewSrc(null)
+    }
+  }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -90,10 +99,12 @@ export function AddStudentDialog({ label, onSuccess }: AddStudentDialogProps) {
       showToast("Student added successfully.")
       setOpen(false)
       form.reset()
+      setPreviewSrc(null)
+
       if (onSuccess) onSuccess()
     } catch (err: any) {
-      console.error("API error:", err);
-      setError(err.message || String(err));
+      console.error("API error:", err)
+      setError(err.message || String(err))
     }
   }
 
@@ -116,7 +127,7 @@ export function AddStudentDialog({ label, onSuccess }: AddStudentDialogProps) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add Student</DialogTitle>
           <DialogDescription>Fill in the form to add a new student.</DialogDescription>
@@ -124,17 +135,33 @@ export function AddStudentDialog({ label, onSuccess }: AddStudentDialogProps) {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="mb-2">
+
+            {/* ----- PHOTO UPLOAD + PREVIEW ----- */}
+            <div className="flex flex-col items-center gap-3">
               <FormLabel>Photo</FormLabel>
+
+              {previewSrc ? (
+                <img
+                  src={previewSrc}
+                  alt="Preview"
+                  className="w-32 h-32 rounded-full object-cover border"
+                />
+              ) : (
+                <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center text-sm text-gray-600">
+                  No Photo
+                </div>
+              )}
+
               <FormControl>
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => setPhotoFile(e.target.files?.[0] || null)}
+                  onChange={handlePhotoChange}
                 />
               </FormControl>
             </div>
 
+            {/* ----- FORM FIELDS ----- */}
             <FormField
               control={form.control}
               name="student_id"
@@ -148,6 +175,7 @@ export function AddStudentDialog({ label, onSuccess }: AddStudentDialogProps) {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="first_name"
@@ -161,6 +189,7 @@ export function AddStudentDialog({ label, onSuccess }: AddStudentDialogProps) {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="last_name"
@@ -174,12 +203,14 @@ export function AddStudentDialog({ label, onSuccess }: AddStudentDialogProps) {
                 </FormItem>
               )}
             />
+
+            {/* PROGRAM */}
             <FormField
               control={form.control}
               name="program_code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Program</FormLabel> {/* Changed from College to Program */}
+                  <FormLabel>Program</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -187,38 +218,33 @@ export function AddStudentDialog({ label, onSuccess }: AddStudentDialogProps) {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={loading ? "Loading programs..." : "Select a program"} />
+                        <SelectValue placeholder="Select a program" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {
-                        programs
-                          .filter(p => p && p.program_code && p.program_name)
-                          .map(program => (
-                            <SelectItem
-                              key={`${program.program_code}-${program.program_name}`}
-                              value={program.program_code}
-                            >
-                              {program.program_code} - {program.program_name}
-                            </SelectItem>
-                          ))}
-
+                      {programs.map(program => (
+                        <SelectItem
+                          key={`${program.program_code}-${program.program_name}`}
+                          value={program.program_code}
+                        >
+                          {program.program_code} — {program.program_name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {/* YEAR LEVEL */}
             <FormField
               control={form.control}
               name="year_level"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Year Level</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select year level" />
@@ -236,16 +262,15 @@ export function AddStudentDialog({ label, onSuccess }: AddStudentDialogProps) {
                 </FormItem>
               )}
             />
+
+            {/* GENDER */}
             <FormField
               control={form.control}
               name="gender"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Gender</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select gender" />
@@ -261,14 +286,18 @@ export function AddStudentDialog({ label, onSuccess }: AddStudentDialogProps) {
                 </FormItem>
               )}
             />
+
             {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
+
             <DialogFooter>
               <Button type="submit" disabled={loading}>
                 Submit
               </Button>
             </DialogFooter>
+
           </form>
         </Form>
+
       </DialogContent>
     </Dialog>
   )
